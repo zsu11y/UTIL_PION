@@ -94,7 +94,7 @@ cd "$REPLAYPATH"
 
 ###################################################################################################################################################
 if [ ! -f "$UTILPATH/ROOTfiles/Scalers/coin_replay_scalers_${RUNNUMBER}_${MAXEVENTS}.root" ]; then
-    eval "$REPLAYPATH/hcana -l -q -b \"SCRIPTS/COIN/SCALERS/PionLT/replay_coin_scalers.C($RUNNUMBER,${MAXEVENTS})\""
+    eval "$REPLAYPATH/hcana -l -q -b \"SCRIPTS/COIN/SCALERS/replay_coin_scalers.C($RUNNUMBER,${MAXEVENTS})\""
     cd "$REPLAYPATH/CALIBRATION/bcm_current_map"
     root -b -l<<EOF 
 .L ScalerCalib.C

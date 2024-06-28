@@ -31,11 +31,11 @@ cd "${SCRIPTPATH}/luminosity/src/"
 
 python3 reana_lumi.py
 
-echo
-echo "Plotting yield data for ${PLOTINFO}..."
-python3 plot_yield.py ${PLOTINFO}
 
-cd "${SCRIPTPATH}/luminosity/OUTPUTS/plots"
-convert Yield_*.png Yield_${PLOTINFO}.pdf
+echo "Plotting yield data for ${PLOTINFO}..."
+python3 plot_yield.py ${PLOTINFO} # change was made in this .py file
+
+cd "${SCRIPTPATH}/luminosity/OUTPUTS/plots" # plot will be in this directory
+convert Yield_*.png Yield_${PLOTINFO}.pdf 
 rm -f Yield_*.png
-evince Yield_${PLOTINFO}.pdf
+# evince Yield_${PLOTINFO}.pdfs # removed to avoid display error for windows 
