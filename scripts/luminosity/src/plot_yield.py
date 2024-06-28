@@ -619,10 +619,11 @@ def plot_yield():
     for i, val in enumerate(yield_data["run number"]):
         print("Run numbers:",yield_data["run number"][i],"Current Values:",yield_data["current"][i])
 
+    
+    #def fit_func(x, m, b):
+       # y = (m/b)*x + 1.0
+       # return y
     '''
-    def fit_func(x, m, b):
-        return (m/b)*x + 1.0
-
     def linear_plot(x, y, xerr=None, yerr=None, xvalmax=100):
         # Remove NaN values from list
         c_arr = [[nx,ny] for nx,ny in zip(x,y) if str(ny) != 'nan']
@@ -675,6 +676,9 @@ def plot_yield():
 
         return m/b    
 
+    def linfunc(x, int, slope):
+        y = int + slope*x
+        return y
     #########################################################################################################################################################
 
     relYieldPlot = plt.figure(figsize=(12,8))
@@ -685,6 +689,15 @@ def plot_yield():
         plt.xlim(0,100)
         plt.ylim(0.96,1.04)
         plt.plot([0,100], [1,1], 'r-',zorder=2)
+        
+        
+        
+        a_fit_HMS_scalerVScurrent, cov_HMS_scalerVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_HMS_scaler"], sigma=yield_data["uncern_yieldRel_HMS_scaler"], absolute_sigma = True)
+        inter_HMS_scalerVScurrent = a_fit_HMS_scalerVScurrent[0]
+        slope_HMS_scalerVScurrent = a_fit_HMS_scalerVScurrent[1]
+        d_inter_HMS_scalerVScurrent = np.sqrt(cov_HMS_scalerVScurrent[0][0])
+        d_slope_HMS_scalerVScurrent = np.sqrt(cov_HMS_scalerVScurrent[1][1])
+        
         plt.errorbar(yield_data["current"],yield_data["yieldRel_HMS_scaler"],yerr=yield_data["yieldRel_HMS_scaler"]*yield_data["uncern_yieldRel_HMS_scaler"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_HMS_scaler"],color='blue',zorder=4,label="_nolegend_")
         #    yield_data["m0_curr_HMS_scaler"] = linear_plot(yield_data["current"],yield_data["yieldRel_HMS_scaler"],None,yield_data["uncern_yieldRel_HMS_scaler"])
@@ -693,7 +706,9 @@ def plot_yield():
         #coeff_HMS_scalerVScurrent = np.polyfit(yield_data["current"], yield_data["yieldRel_HMS_scaler"], 1)
         #poly_HMS_scalerVScurrent = np.poly1d(coeff_HMS_scalerVScurrent)
         #plt.plot(yield_data["current"], poly_HMS_scalerVScurrent(yield_data["yieldRel_HMS_scaler"]), color='green', label='Line of Best Fit')
-        
+        yfit = (slope_HMS_scalerVScurrent/inter_HMS_scalerVScurrent)*yield_data["current"] + 1.0
+        plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_scalerVScurrent, d_slope_HMS_scalerVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_scalerVScurrent, d_inter_HMS_scalerVScurrent))
+    
         plt.ylabel('Rel. Yield %s' % (str(HMSscaler)), fontsize=16)
         plt.xlabel('Current [uA]', fontsize =16)
         plt.legend()
@@ -710,11 +725,22 @@ def plot_yield():
         plt.xlim(0,100)
         plt.ylim(0.96,1.04)
         plt.plot([0,100], [1,1], 'r-',zorder=2)
+        
+        a_fit_HMS_ntrVScurrent, cov_HMS_ntrVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_HMS_notrack"], sigma=yield_data["uncern_yieldRel_HMS_notrack"], absolute_sigma = True)
+        inter_HMS_ntrVScurrent = a_fit_HMS_ntrVScurrent[0]
+        slope_HMS_ntrVScurrent = a_fit_HMS_ntrVScurrent[1]
+        d_inter_HMS_ntrVScurrent = np.sqrt(cov_HMS_ntrVScurrent[0][0])
+        d_slope_HMS_ntrVScurrent = np.sqrt(cov_HMS_ntrVScurrent[1][1])
+        
         plt.errorbar(yield_data["current"], yield_data["yieldRel_HMS_notrack"], yerr=yield_data["yieldRel_HMS_notrack"]*yield_data["uncern_yieldRel_HMS_notrack"], color='black', linestyle='None', zorder=3, label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_HMS_notrack"],color='blue',zorder=4,label="_nolegend_")
         #    yield_data["m0_curr_HMS_notrack"] = linear_plot(yield_data["current"],yield_data["yieldRel_HMS_CPULT_notrack"],None,yield_data["uncern_yieldRel_HMS_CPULT_notrack"])
         #plt.errorbar(yield_data["current"],yield_data["yieldRel_HMS_CPULT_notrack"],yerr=yield_data["yieldRel_HMS_CPULT_notrack"]*yield_data["uncern_yieldRel_HMS_CPULT_notrack"],color='black',linestyle='None',zorder=5)
         #plt.scatter(yield_data["current"],yield_data["yieldRel_HMS_CPULT_notrack"],color='red',zorder=6)
+
+        yfit = (slope_HMS_ntrVScurrent/inter_HMS_ntrVScurrent)*yield_data["current"] + 1.0
+        plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_ntrVScurrent, d_slope_HMS_ntrVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_ntrVScurrent, d_inter_HMS_ntrVScurrent))
+    
 
         #plot line of best fit
         #coeff_HMS_ntrVScurrent = np.polyfit(yield_data["current"], yield_data["yieldRel_HMS_notrack"], 1)
@@ -1267,7 +1293,7 @@ def plot_yield():
     #print("SHMS scaler v. rate: slope + intercept = ", poly_SHMS_scalerVSrate, "\n")
     #print("SHMS notrack v. rate: slope + intercept = ", poly_SHMS_ntrVSrate, "\n")
     #print("SHMS track v. rate: slope + intercept = ", poly_SHMS_trVSrate, "\n")
-    
+    #print(slope_HMS_scalerVScurrent, d_slope_HMS_scalerVScurrent, inter_HMS_scalerVScurrent, d_inter_HMS_scalerVScurrent)
     
     return yield_data
     
