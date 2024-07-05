@@ -160,6 +160,7 @@ def calc_yield():
         "uncern_SHMS_evts_track" : np.sqrt(makeList("p_int_etottracknorm_evts"))/makeList("p_int_etottracknorm_evts"),
     }            
     
+    #2022 data 
     slope = 5542.0
     uncern_slope = 11.5
     intercept = 250029
@@ -720,7 +721,7 @@ def plot_yield():
             yfit = (slope_HMS_scalerVScurrent)*yield_data["current"] + inter_HMS_scalerVScurrent
             yfit2 = (slope_HMS_scalerVScurrent2)*yield_data["current"] + 1.0
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_scalerVScurrent, d_slope_HMS_scalerVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_scalerVScurrent, d_inter_HMS_scalerVScurrent))
-            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_scalerVScurrent2, d_slope_HMS_scalerVScurrent2) + "\n intercept = %f +/- %f" %(1.000000, 0))
+            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_scalerVScurrent2, d_slope_HMS_scalerVScurrent2) + "\n fixed intercept = %f" %(1.000000))
     
         plt.ylabel('Rel. Yield %s' % (str(HMSscaler)), fontsize=16)
         plt.xlabel('Current [uA]', fontsize =16)
@@ -761,7 +762,7 @@ def plot_yield():
             yfit = (slope_HMS_ntrVScurrent)*yield_data["current"] + inter_HMS_ntrVScurrent
             yfit2 = (slope_HMS_ntrVScurrent2)*yield_data["current"] + 1.0
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_ntrVScurrent, d_slope_HMS_ntrVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_ntrVScurrent, d_inter_HMS_ntrVScurrent))
-            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_ntrVScurrent2, d_slope_HMS_ntrVScurrent2) + "\n intercept = %f +/- %f" %(1.000000, 0))
+            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_ntrVScurrent2, d_slope_HMS_ntrVScurrent2) + "\n fixed intercept = %f" %(1.000000))
 
 
        
@@ -805,7 +806,7 @@ def plot_yield():
             yfit = (slope_HMS_trVScurrent)*yield_data["current"] + inter_HMS_trVScurrent
             yfit2 = (slope_HMS_trVScurrent2)*yield_data["current"] + 1.0
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent, d_slope_HMS_trVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_trVScurrent, d_inter_HMS_trVScurrent))
-            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent2, d_slope_HMS_trVScurrent2) + "\n intercept = %f +/- %f" %(1.000000, 0))
+            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent2, d_slope_HMS_trVScurrent2) + "\n fixed intercept = %f" %(1.000000))
 
         
         plt.ylabel('Rel. Yield track', fontsize=16)
@@ -847,7 +848,7 @@ def plot_yield():
             yfit = (slope_SHMS_scalerVScurrent)*yield_data["current"] + inter_SHMS_scalerVScurrent
             yfit2 = (slope_SHMS_scalerVScurrent2)*yield_data["current"] + 1.0
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_scalerVScurrent, d_slope_SHMS_scalerVScurrent) + "\n intercept = %f +/- %f" %(inter_SHMS_scalerVScurrent, d_inter_SHMS_scalerVScurrent))
-            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_scalerVScurrent2, d_slope_SHMS_scalerVScurrent2) + "\n intercept = %f +/- %f" %(1.000000,0))
+            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_scalerVScurrent2, d_slope_SHMS_scalerVScurrent2) + "\n fixed intercept = %f" %(1.000000))
            
 
         plt.ylabel('Rel. Yield %s' % (str(SHMSscaler)), fontsize=16)
@@ -890,7 +891,7 @@ def plot_yield():
             yfit = (slope_SHMS_ntrVScurrent)*yield_data["current"] + inter_SHMS_ntrVScurrent
             yfit2 = (slope_SHMS_ntrVScurrent2)*yield_data["current"] + 1.0
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_ntrVScurrent, d_slope_SHMS_ntrVScurrent) + "\n intercept = %f +/- %f" %(inter_SHMS_ntrVScurrent, d_inter_SHMS_ntrVScurrent))
-            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_ntrVScurrent2, d_slope_SHMS_ntrVScurrent2) + "\n intercept = %f +/- %f" %(1.000000,0))
+            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_ntrVScurrent2, d_slope_SHMS_ntrVScurrent2) + "\n fixed intercept = %f" %(1.000000))
             
         
         
@@ -937,7 +938,7 @@ def plot_yield():
             yfit = (slope_SHMS_trVScurrent)*yield_data["current"] + inter_SHMS_trVScurrent
             yfit2 = (slope_SHMS_trVScurrent2)*yield_data["current"] + 1.0
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent, d_slope_SHMS_trVScurrent) + "\n intercept = %f +/- %f" %(inter_SHMS_trVScurrent, d_inter_SHMS_trVScurrent))
-            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent2, d_slope_SHMS_trVScurrent2) + "\n intercept = %f +/- %f" %(1.000000, 0))
+            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent2, d_slope_SHMS_trVScurrent2) + "\n fixed intercept = %f" %(1.000000))
             
         
        
