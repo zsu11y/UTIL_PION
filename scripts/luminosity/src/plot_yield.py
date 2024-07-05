@@ -679,6 +679,13 @@ def plot_yield():
     def linfunc(x, int, slope):
         y = int + slope*x
         return y
+    
+    def linfunc2(x,slope):
+    
+        y = slope*x + 1.0
+        return y
+    
+    
     #########################################################################################################################################################
 
     relYieldPlot = plt.figure(figsize=(12,8))
@@ -687,31 +694,37 @@ def plot_yield():
         plt.subplot(2,3,1)    
         plt.grid(zorder=1)
         plt.xlim(0,100)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,100], [1,1], 'r-',zorder=2)
         
         
+        if(np.isnan(yield_data["yieldRel_HMS_scaler"][0])== False):
+            a_fit_HMS_scalerVScurrent, cov_HMS_scalerVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_HMS_scaler"], sigma=yield_data["uncern_yieldRel_HMS_scaler"], absolute_sigma = True)
+            inter_HMS_scalerVScurrent = a_fit_HMS_scalerVScurrent[0]
+            slope_HMS_scalerVScurrent = a_fit_HMS_scalerVScurrent[1]
+            d_inter_HMS_scalerVScurrent = np.sqrt(cov_HMS_scalerVScurrent[0][0])
+            d_slope_HMS_scalerVScurrent = np.sqrt(cov_HMS_scalerVScurrent[1][1])
+            
+            a_fit_HMS_scalerVScurrent2, cov_HMS_scalerVScurrent2 = curve_fit(linfunc2,yield_data["current"], yield_data["yieldRel_HMS_scaler"], sigma=yield_data["uncern_yieldRel_HMS_scaler"], absolute_sigma = True)
+           
+            slope_HMS_scalerVScurrent2 = a_fit_HMS_scalerVScurrent2[0]
         
-        a_fit_HMS_scalerVScurrent, cov_HMS_scalerVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_HMS_scaler"], sigma=yield_data["uncern_yieldRel_HMS_scaler"], absolute_sigma = True)
-        inter_HMS_scalerVScurrent = a_fit_HMS_scalerVScurrent[0]
-        slope_HMS_scalerVScurrent = a_fit_HMS_scalerVScurrent[1]
-        d_inter_HMS_scalerVScurrent = np.sqrt(cov_HMS_scalerVScurrent[0][0])
-        d_slope_HMS_scalerVScurrent = np.sqrt(cov_HMS_scalerVScurrent[1][1])
+            d_slope_HMS_scalerVScurrent2= np.sqrt(cov_HMS_scalerVScurrent2[0][0])
         
         plt.errorbar(yield_data["current"],yield_data["yieldRel_HMS_scaler"],yerr=yield_data["yieldRel_HMS_scaler"]*yield_data["uncern_yieldRel_HMS_scaler"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_HMS_scaler"],color='blue',zorder=4,label="_nolegend_")
         #    yield_data["m0_curr_HMS_scaler"] = linear_plot(yield_data["current"],yield_data["yieldRel_HMS_scaler"],None,yield_data["uncern_yieldRel_HMS_scaler"])
         
-        #plot line of best fit
-        #coeff_HMS_scalerVScurrent = np.polyfit(yield_data["current"], yield_data["yieldRel_HMS_scaler"], 1)
-        #poly_HMS_scalerVScurrent = np.poly1d(coeff_HMS_scalerVScurrent)
-        #plt.plot(yield_data["current"], poly_HMS_scalerVScurrent(yield_data["yieldRel_HMS_scaler"]), color='green', label='Line of Best Fit')
-        yfit = (slope_HMS_scalerVScurrent/inter_HMS_scalerVScurrent)*yield_data["current"] + 1.0
-        plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_scalerVScurrent, d_slope_HMS_scalerVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_scalerVScurrent, d_inter_HMS_scalerVScurrent))
+        
+        if(np.isnan(yield_data["yieldRel_HMS_scaler"][0])== False):
+            yfit = (slope_HMS_scalerVScurrent)*yield_data["current"] + inter_HMS_scalerVScurrent
+            yfit2 = (slope_HMS_scalerVScurrent2)*yield_data["current"] + 1.0
+            plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_scalerVScurrent, d_slope_HMS_scalerVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_scalerVScurrent, d_inter_HMS_scalerVScurrent))
+            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_scalerVScurrent2, d_slope_HMS_scalerVScurrent2) + "\n intercept = %f +/- %f" %(1.000000, 0))
     
         plt.ylabel('Rel. Yield %s' % (str(HMSscaler)), fontsize=16)
         plt.xlabel('Current [uA]', fontsize =16)
-        plt.legend()
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('HMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =16)
         elif target == 'LH2' :
@@ -723,34 +736,38 @@ def plot_yield():
         plt.subplot(2,3,2)    
         plt.grid(zorder=1)
         plt.xlim(0,100)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,100], [1,1], 'r-',zorder=2)
         
-        a_fit_HMS_ntrVScurrent, cov_HMS_ntrVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_HMS_notrack"], sigma=yield_data["uncern_yieldRel_HMS_notrack"], absolute_sigma = True)
-        inter_HMS_ntrVScurrent = a_fit_HMS_ntrVScurrent[0]
-        slope_HMS_ntrVScurrent = a_fit_HMS_ntrVScurrent[1]
-        d_inter_HMS_ntrVScurrent = np.sqrt(cov_HMS_ntrVScurrent[0][0])
-        d_slope_HMS_ntrVScurrent = np.sqrt(cov_HMS_ntrVScurrent[1][1])
+        
+        if(np.isnan(yield_data["yieldRel_HMS_notrack"][0])== False):
+            a_fit_HMS_ntrVScurrent, cov_HMS_ntrVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_HMS_notrack"], sigma=yield_data["uncern_yieldRel_HMS_notrack"], absolute_sigma = True)
+            inter_HMS_ntrVScurrent = a_fit_HMS_ntrVScurrent[0]
+            slope_HMS_ntrVScurrent = a_fit_HMS_ntrVScurrent[1]
+            d_inter_HMS_ntrVScurrent = np.sqrt(cov_HMS_ntrVScurrent[0][0])
+            d_slope_HMS_ntrVScurrent = np.sqrt(cov_HMS_ntrVScurrent[1][1])
+            
+            a_fit_HMS_ntrVScurrent2, cov_HMS_ntrVScurrent2 = curve_fit(linfunc2,yield_data["current"], yield_data["yieldRel_HMS_notrack"], sigma=yield_data["uncern_yieldRel_HMS_notrack"], absolute_sigma = True)
+           
+            slope_HMS_ntrVScurrent2 = a_fit_HMS_ntrVScurrent2[0]
+
+            d_slope_HMS_ntrVScurrent2 = np.sqrt(cov_HMS_ntrVScurrent2[0][0])
         
         plt.errorbar(yield_data["current"], yield_data["yieldRel_HMS_notrack"], yerr=yield_data["yieldRel_HMS_notrack"]*yield_data["uncern_yieldRel_HMS_notrack"], color='black', linestyle='None', zorder=3, label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_HMS_notrack"],color='blue',zorder=4,label="_nolegend_")
         #    yield_data["m0_curr_HMS_notrack"] = linear_plot(yield_data["current"],yield_data["yieldRel_HMS_CPULT_notrack"],None,yield_data["uncern_yieldRel_HMS_CPULT_notrack"])
-        #plt.errorbar(yield_data["current"],yield_data["yieldRel_HMS_CPULT_notrack"],yerr=yield_data["yieldRel_HMS_CPULT_notrack"]*yield_data["uncern_yieldRel_HMS_CPULT_notrack"],color='black',linestyle='None',zorder=5)
-        #plt.scatter(yield_data["current"],yield_data["yieldRel_HMS_CPULT_notrack"],color='red',zorder=6)
-
-        yfit = (slope_HMS_ntrVScurrent/inter_HMS_ntrVScurrent)*yield_data["current"] + 1.0
-        plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_ntrVScurrent, d_slope_HMS_ntrVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_ntrVScurrent, d_inter_HMS_ntrVScurrent))
-    
-
-        #plot line of best fit
-        #coeff_HMS_ntrVScurrent = np.polyfit(yield_data["current"], yield_data["yieldRel_HMS_notrack"], 1)
-        #poly_HMS_ntrVScurrent = np.poly1d(coeff_HMS_ntrVScurrent)
-        #plt.plot(yield_data["current"], poly_HMS_ntrVScurrent(yield_data["yieldRel_HMS_notrack"]), color='green', label='Line of Best Fit')
         
+        if(np.isnan(yield_data["yieldRel_HMS_notrack"][0])== False):
+            yfit = (slope_HMS_ntrVScurrent)*yield_data["current"] + inter_HMS_ntrVScurrent
+            yfit2 = (slope_HMS_ntrVScurrent2)*yield_data["current"] + 1.0
+            plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_ntrVScurrent, d_slope_HMS_ntrVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_ntrVScurrent, d_inter_HMS_ntrVScurrent))
+            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_ntrVScurrent2, d_slope_HMS_ntrVScurrent2) + "\n intercept = %f +/- %f" %(1.000000, 0))
+
+
        
         plt.ylabel('Rel. Yield no track', fontsize=16)
         plt.xlabel('Current [uA]', fontsize =16)
-        plt.legend()
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('HMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =16)
         elif target == 'LH2' :
@@ -762,22 +779,38 @@ def plot_yield():
         plt.subplot(2,3,3)    
         plt.grid(zorder=1)
         plt.xlim(0,100)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,100], [1,1], 'r-',zorder=2)
+        
+        
+        if(np.isnan(yield_data["yieldRel_HMS_track"][0])== False):
+            a_fit_HMS_trVScurrent, cov_HMS_trVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_HMS_track"], sigma=yield_data["uncern_yieldRel_HMS_track"], absolute_sigma = True)
+            inter_HMS_trVScurrent = a_fit_HMS_trVScurrent[0]
+            slope_HMS_trVScurrent = a_fit_HMS_trVScurrent[1]
+            d_inter_HMS_trVScurrent = np.sqrt(cov_HMS_trVScurrent[0][0])
+            d_slope_HMS_trVScurrent = np.sqrt(cov_HMS_trVScurrent[1][1])
+            
+            a_fit_HMS_trVScurrent2, cov_HMS_trVScurrent2 = curve_fit(linfunc2,yield_data["current"], yield_data["yieldRel_HMS_track"], sigma=yield_data["uncern_yieldRel_HMS_track"], absolute_sigma = True)
+            
+            slope_HMS_trVScurrent2 = a_fit_HMS_trVScurrent2[0]
+            
+            d_slope_HMS_trVScurrent2 = np.sqrt(cov_HMS_trVScurrent2[0][0])
         plt.errorbar(yield_data["current"],yield_data["yieldRel_HMS_track"],yerr=yield_data["yieldRel_HMS_track"]*yield_data["uncern_yieldRel_HMS_track"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_HMS_track"],color='blue',zorder=4,label="_nolegend_")
         #    yield_data["m0_curr_HMS_track"] = linear_plot(yield_data["current"],yield_data["yieldRel_HMS_track"],None,yield_data["uncern_yieldRel_HMS_track"])
         #plt.errorbar(yield_data["current"],yield_data["yieldRel_HMS_CPULT_track"],yerr=yield_data["yieldRel_HMS_CPULT_track"]*yield_data["uncern_yieldRel_HMS_CPULT_track"],color='black',linestyle='None',zorder=5)
         #plt.scatter(yield_data["current"],yield_data["yieldRel_HMS_CPULT_track"],color='red',zorder=6)
         
-        #plot line of best fit
-        #coeff_HMS_trVScurrent = np.polyfit(yield_data["current"], yield_data["yieldRel_HMS_track"], 1)
-        #poly_HMS_trVScurrent = np.poly1d(coeff_HMS_trVScurrent)
-        #plt.plot(yield_data["current"], poly_HMS_trVScurrent(yield_data["yieldRel_HMS_track"]), color='green', label='Line of Best Fit')
+        if(np.isnan(yield_data["yieldRel_HMS_track"][0])== False):
+            yfit = (slope_HMS_trVScurrent)*yield_data["current"] + inter_HMS_trVScurrent
+            yfit2 = (slope_HMS_trVScurrent2)*yield_data["current"] + 1.0
+            plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent, d_slope_HMS_trVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_trVScurrent, d_inter_HMS_trVScurrent))
+            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent2, d_slope_HMS_trVScurrent2) + "\n intercept = %f +/- %f" %(1.000000, 0))
+
         
         plt.ylabel('Rel. Yield track', fontsize=16)
         plt.xlabel('Current [uA]', fontsize =16)
-        plt.legend()
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('HMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =16)
         elif target == 'LH2' :
@@ -790,20 +823,36 @@ def plot_yield():
         plt.subplot(2,3,4)    
         plt.grid(zorder=1)
         plt.xlim(0,100)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,100], [1,1], 'r-',zorder=2)
+        
+        if(np.isnan(yield_data["yieldRel_SHMS_scaler"][0])== False):
+            a_fit_SHMS_scalerVScurrent, cov_SHMS_scalerVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_SHMS_scaler"], sigma=yield_data["uncern_yieldRel_SHMS_scaler"], absolute_sigma = True)
+            inter_SHMS_scalerVScurrent = a_fit_SHMS_scalerVScurrent[0]
+            slope_SHMS_scalerVScurrent = a_fit_SHMS_scalerVScurrent[1]
+            d_inter_SHMS_scalerVScurrent = np.sqrt(cov_SHMS_scalerVScurrent[0][0])
+            d_slope_SHMS_scalerVScurrent = np.sqrt(cov_SHMS_scalerVScurrent[1][1])
+            
+            a_fit_SHMS_scalerVScurrent2, cov_SHMS_scalerVScurrent2 = curve_fit(linfunc2,yield_data["current"], yield_data["yieldRel_SHMS_scaler"], sigma=yield_data["uncern_yieldRel_SHMS_scaler"], absolute_sigma = True)
+            
+            slope_SHMS_scalerVScurrent2 = a_fit_SHMS_scalerVScurrent2[0]
+            
+            d_slope_SHMS_scalerVScurrent2 = np.sqrt(cov_SHMS_scalerVScurrent2[0][0])
+        
         plt.errorbar(yield_data["current"],yield_data["yieldRel_SHMS_scaler"],yerr=yield_data["yieldRel_SHMS_scaler"]*yield_data["uncern_yieldRel_SHMS_scaler"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_SHMS_scaler"],color='blue',zorder=4,label="_nolegend_")
         #    yield_data["m0_curr_SHMS_scaler"] = linear_plot(yield_data["current"],yield_data["yieldRel_SHMS_scaler"],None,yield_data["uncern_yieldRel_SHMS_scaler"])
 
-        #plot line of best fit
-        #coeff_SHMS_scalerVScurrent = np.polyfit(yield_data["current"], yield_data["yieldRel_SHMS_scaler"], 1)
-        #poly_SHMS_scalerVScurrent = np.poly1d(coeff_SHMS_scalerVScurrent)
-        #plt.plot(yield_data["current"], poly_SHMS_scalerVScurrent(yield_data["yieldRel_SHMS_scaler"]), color='green', label='Line of Best Fit')
-        
+        if(np.isnan(yield_data["yieldRel_SHMS_scaler"][0])== False):
+            yfit = (slope_SHMS_scalerVScurrent)*yield_data["current"] + inter_SHMS_scalerVScurrent
+            yfit2 = (slope_SHMS_scalerVScurrent2)*yield_data["current"] + 1.0
+            plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_scalerVScurrent, d_slope_SHMS_scalerVScurrent) + "\n intercept = %f +/- %f" %(inter_SHMS_scalerVScurrent, d_inter_SHMS_scalerVScurrent))
+            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_scalerVScurrent2, d_slope_SHMS_scalerVScurrent2) + "\n intercept = %f +/- %f" %(1.000000,0))
+           
+
         plt.ylabel('Rel. Yield %s' % (str(SHMSscaler)), fontsize=16)
         plt.xlabel('Current [uA]', fontsize =16)
-        plt.legend()
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('SHMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =16)
         elif target == 'LH2' :
@@ -815,22 +864,39 @@ def plot_yield():
         plt.subplot(2,3,5)    
         plt.grid(zorder=1)
         plt.xlim(0,100)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,100], [1,1], 'r-',zorder=2)
+        
+        if(np.isnan(yield_data["yieldRel_SHMS_notrack"][0])== False):
+            a_fit_SHMS_ntrVScurrent, cov_SHMS_ntrVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_SHMS_notrack"], sigma=yield_data["uncern_yieldRel_SHMS_notrack"], absolute_sigma = True)
+            inter_SHMS_ntrVScurrent = a_fit_SHMS_ntrVScurrent[0]
+            slope_SHMS_ntrVScurrent = a_fit_SHMS_ntrVScurrent[1]
+            d_inter_SHMS_ntrVScurrent = np.sqrt(cov_SHMS_ntrVScurrent[0][0])
+            d_slope_SHMS_ntrVScurrent = np.sqrt(cov_SHMS_ntrVScurrent[1][1])
+            
+            a_fit_SHMS_ntrVScurrent2, cov_SHMS_ntrVScurrent2 = curve_fit(linfunc2,yield_data["current"], yield_data["yieldRel_SHMS_notrack"], sigma=yield_data["uncern_yieldRel_SHMS_notrack"], absolute_sigma = True)
+
+            slope_SHMS_ntrVScurrent2 = a_fit_SHMS_ntrVScurrent2[0]
+            
+            d_slope_SHMS_ntrVScurrent2 = np.sqrt(cov_SHMS_ntrVScurrent2[0][0])
+        
         plt.errorbar(yield_data["current"],yield_data["yieldRel_SHMS_notrack"],yerr=yield_data["yieldRel_SHMS_notrack"]*yield_data["uncern_yieldRel_SHMS_notrack"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_SHMS_notrack"],color='blue',zorder=4,label="_nolegend_")
         #    yield_data["m0_curr_SHMS_notrack"] = linear_plot(yield_data["current"],yield_data["yieldRel_SHMS_notrack"],None,yield_data["uncern_yieldRel_SHMS_notrack"])
         #plt.errorbar(yield_data["current"],yield_data["yieldRel_SHMS_CPULT_notrack"],yerr=yield_data["yieldRel_SHMS_CPULT_notrack"]*yield_data["uncern_yieldRel_SHMS_CPULT_notrack"],color='black',linestyle='None',zorder=5)
         #plt.scatter(yield_data["current"],yield_data["yieldRel_SHMS_CPULT_notrack"],color='red',zorder=6)
         
-        #plot line of best fit
-        #coeff_SHMS_ntrVScurrent = np.polyfit(yield_data["current"], yield_data["yieldRel_SHMS_notrack"], 1)
-        #poly_SHMS_ntrVScurrent = np.poly1d(coeff_SHMS_ntrVScurrent)
-        #plt.plot(yield_data["current"], poly_SHMS_ntrVScurrent(yield_data["yieldRel_SHMS_notrack"]), color='green', label='Line of Best Fit')
+        if(np.isnan(yield_data["yieldRel_SHMS_notrack"][0])== False):
+            yfit = (slope_SHMS_ntrVScurrent)*yield_data["current"] + inter_SHMS_ntrVScurrent
+            yfit2 = (slope_SHMS_ntrVScurrent2)*yield_data["current"] + 1.0
+            plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_ntrVScurrent, d_slope_SHMS_ntrVScurrent) + "\n intercept = %f +/- %f" %(inter_SHMS_ntrVScurrent, d_inter_SHMS_ntrVScurrent))
+            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_ntrVScurrent2, d_slope_SHMS_ntrVScurrent2) + "\n intercept = %f +/- %f" %(1.000000,0))
+            
+        
         
         plt.ylabel('Rel. Yield no track', fontsize=16)
         plt.xlabel('Current [uA]', fontsize =16)
-        plt.legend()
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('SHMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =16)
         elif target == 'LH2' :
@@ -842,22 +908,42 @@ def plot_yield():
         plt.subplot(2,3,6)    
         plt.grid(zorder=1)
         plt.xlim(0,100)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,100], [1,1], 'r-',zorder=2)
+        
+        
+        if(np.isnan(yield_data["yieldRel_SHMS_track"][0])== False):
+            a_fit_SHMS_trVScurrent, cov_SHMS_trVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_SHMS_track"], sigma=yield_data["uncern_yieldRel_SHMS_track"], absolute_sigma = True)
+            inter_SHMS_trVScurrent = a_fit_SHMS_trVScurrent[0]
+            slope_SHMS_trVScurrent = a_fit_SHMS_trVScurrent[1]
+            d_inter_SHMS_trVScurrent = np.sqrt(cov_SHMS_trVScurrent[0][0])
+            d_slope_SHMS_trVScurrent = np.sqrt(cov_SHMS_trVScurrent[1][1])
+            
+            a_fit_SHMS_trVScurrent2, cov_SHMS_trVScurrent2 = curve_fit(linfunc2,yield_data["current"], yield_data["yieldRel_SHMS_track"], sigma=yield_data["uncern_yieldRel_SHMS_track"], absolute_sigma = True)
+            
+            slope_SHMS_trVScurrent2 = a_fit_SHMS_trVScurrent2[0]
+            
+            d_slope_SHMS_trVScurrent2 = np.sqrt(cov_SHMS_trVScurrent2[0][0])
+        
+        
         plt.errorbar(yield_data["current"],yield_data["yieldRel_SHMS_track"],yerr=yield_data["yieldRel_SHMS_track"]*yield_data["uncern_yieldRel_SHMS_track"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_SHMS_track"],color='blue',zorder=4,label="_nolegend_")
         #    yield_data["m0_curr_SHMS_track"] = linear_plot(yield_data["current"],yield_data["yieldRel_SHMS_track"]0,None,yield_data["uncern_yieldRel_SHMS_track"])
         #plt.errorbar(yield_data["current"],yield_data["yieldRel_SHMS_CPULT_track"],yerr=yield_data["yieldRel_SHMS_CPULT_track"]*yield_data["uncern_yieldRel_SHMS_CPULT_track"],color='black',linestyle='None',zorder=5)
         #plt.scatter(yield_data["current"],yield_data["yieldRel_SHMS_CPULT_track"],color='red',zorder=6)
         
-        #plot line of best fit
-        #coeff_SHMS_trVScurrent = np.polyfit(yield_data["current"], yield_data["yieldRel_SHMS_track"], 1)
-        #poly_SHMS_trVScurrent = np.poly1d(coeff_SHMS_trVScurrent)
-        #plt.plot(yield_data["current"], poly_SHMS_trVScurrent(yield_data["yieldRel_SHMS_track"]), color='green', label='Line of Best Fit')
         
+        if(np.isnan(yield_data["yieldRel_SHMS_track"][0])== False):
+            yfit = (slope_SHMS_trVScurrent)*yield_data["current"] + inter_SHMS_trVScurrent
+            yfit2 = (slope_SHMS_trVScurrent2)*yield_data["current"] + 1.0
+            plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent, d_slope_SHMS_trVScurrent) + "\n intercept = %f +/- %f" %(inter_SHMS_trVScurrent, d_inter_SHMS_trVScurrent))
+            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent2, d_slope_SHMS_trVScurrent2) + "\n intercept = %f +/- %f" %(1.000000, 0))
+            
+        
+       
         plt.ylabel('Rel. Yield track', fontsize=16)
         plt.xlabel('Current [uA]', fontsize =16)
-        plt.legend()
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('SHMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =16)
         elif target == 'LH2' :
@@ -877,11 +963,25 @@ def plot_yield():
         plt.subplot(2,3,1)    
         plt.grid(zorder=1)
         plt.xlim(0,(max(yield_data["rate_HMS"])/1000)+5)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,(max(yield_data["rate_HMS"])/1000)+5], [1,1], 'r-',zorder=2)
+        
+        if(np.isnan(yield_data["yieldRel_HMS_scaler"][0])== False):
+            a_fit_HMS_scalerVSrate, cov_HMS_scalerVSrate = curve_fit(linfunc,yield_data["rate_HMS"]/1000, yield_data["yieldRel_HMS_scaler"], sigma=yield_data["uncern_yieldRel_HMS_scaler"], absolute_sigma = True)
+            inter_HMS_scalerVSrate = a_fit_HMS_scalerVSrate[0]
+            slope_HMS_scalerVSrate = a_fit_HMS_scalerVSrate[1]
+            d_inter_HMS_scalerVSrate = np.sqrt(cov_HMS_scalerVSrate[0][0])
+            d_slope_HMS_scalerVSrate = np.sqrt(cov_HMS_scalerVSrate[1][1])
+        
         plt.errorbar(yield_data["rate_HMS"]/1000,yield_data["yieldRel_HMS_scaler"],yerr=yield_data["yieldRel_HMS_scaler"]*yield_data["uncern_yieldRel_HMS_scaler"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["rate_HMS"]/1000,yield_data["yieldRel_HMS_scaler"],color='blue',zorder=4,label="_nolegend_")
         #yield_data["m0_rate_HMS_scaler"] = linear_plot(yield_data["rate_HMS"]/1000,yield_data["yieldRel_HMS_scaler"],None,yield_data["uncern_yieldRel_HMS_scaler"],xvalmax=max((yield_data["rate_HMS"])/1000)+5)
+        
+        if(np.isnan(yield_data["yieldRel_HMS_scaler"][0])== False):
+            yfit = (slope_HMS_scalerVSrate)*(yield_data["rate_HMS"]/1000) + inter_HMS_scalerVSrate
+            plt.plot(yield_data["rate_HMS"]/1000, yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_scalerVSrate, d_slope_HMS_scalerVSrate) + "\n intercept = %f +/- %f" %(inter_HMS_scalerVSrate, d_inter_HMS_scalerVSrate))
+    
+        
         print("debug HMS rate ploting:")
         print(yield_data["rate_HMS"]/1000)
         print(yield_data["yieldRel_HMS_scaler"])
@@ -893,7 +993,7 @@ def plot_yield():
        
         plt.ylabel('Rel. Yield %s' % (str(HMSscaler)), fontsize=16)
         plt.xlabel('HMS %s Rate [kHz]' % (str(HMSscaler)), fontsize =16)
-        plt.legend()
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('HMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =16)
         elif target == 'LH2' :
@@ -905,22 +1005,32 @@ def plot_yield():
         plt.subplot(2,3,2)    
         plt.grid(zorder=1)
         plt.xlim(0,(max(yield_data["rate_HMS"])/1000)+5)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,(max(yield_data["rate_HMS"])/1000)+5], [1,1], 'r-',zorder=2)
+        
+        if(np.isnan(yield_data["yieldRel_HMS_notrack"][0])== False):
+            a_fit_HMS_ntrVSrate, cov_HMS_ntrVSrate = curve_fit(linfunc,yield_data["rate_HMS"]/1000, yield_data["yieldRel_HMS_notrack"], sigma=yield_data["uncern_yieldRel_HMS_notrack"], absolute_sigma = True)
+            inter_HMS_ntrVSrate = a_fit_HMS_ntrVSrate[0]
+            slope_HMS_ntrVSrate = a_fit_HMS_ntrVSrate[1]
+            d_inter_HMS_ntrVSrate = np.sqrt(cov_HMS_ntrVSrate[0][0])
+            d_slope_HMS_ntrVSrate = np.sqrt(cov_HMS_ntrVSrate[1][1])
+        
+        
         plt.errorbar(yield_data["rate_HMS"]/1000,yield_data["yieldRel_HMS_notrack"],yerr=yield_data["yieldRel_HMS_notrack"]*yield_data["uncern_yieldRel_HMS_notrack"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["rate_HMS"]/1000,yield_data["yieldRel_HMS_notrack"],color='blue',zorder=4,label="_nolegend_")
         #yield_data["m0_rate_HMS_notrack"] = linear_plot(yield_data["rate_HMS"]/1000,yield_data["yieldRel_HMS_notrack"],None,yield_data["uncern_yieldRel_HMS_notrack"],xvalmax=max((yield_data["rate_HMS"])/1000)+5)
         #plt.errorbar(yield_data["rate_HMS"]/1000,yield_data["yieldRel_HMS_CPULT_notrack"],yerr=yield_data["yieldRel_HMS_CPULT_notrack"]*yield_data["uncern_yieldRel_HMS_CPULT_notrack"],color='black',linestyle='None',zorder=5)
         #plt.scatter(yield_data["rate_HMS"]/1000,yield_data["yieldRel_HMS_CPULT_notrack"],color='red',zorder=6)
         
-        #plot line of best fit
-        #coeff_HMS_ntrVSrate = np.polyfit(yield_data["rate_HMS"], yield_data["yieldRel_HMS_notrack"], 1)
-        #poly_HMS_ntrVSrate = np.poly1d(coeff_HMS_ntrVSrate)
-        #plt.plot(yield_data["rate_HMS"]/1000, poly_HMS_ntrVSrate(yield_data["yieldRel_HMS_notrack"]), color='green', label='Line of Best Fit')
+        if(np.isnan(yield_data["yieldRel_HMS_notrack"][0])== False):
+            yfit = (slope_HMS_ntrVSrate)*(yield_data["rate_HMS"]/1000) + inter_HMS_ntrVSrate
+            plt.plot(yield_data["rate_HMS"]/1000, yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_ntrVSrate, d_slope_HMS_ntrVSrate) + "\n intercept = %f +/- %f" %(inter_HMS_ntrVSrate, d_inter_HMS_ntrVSrate))
+    
+        
         
         plt.ylabel('Rel. Yield no track', fontsize=16)
         plt.xlabel('HMS %s Rate [kHz]' % (str(HMSscaler)), fontsize =16)
-        plt.legend()
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('HMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =16)
         elif target == 'LH2' :
@@ -932,22 +1042,30 @@ def plot_yield():
         plt.subplot(2,3,3)    
         plt.grid(zorder=1)
         plt.xlim(0,(max(yield_data["rate_HMS"])/1000)+5)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,(max(yield_data["rate_HMS"])/1000)+5], [1,1], 'r-',zorder=2)
+        
+        if(np.isnan(yield_data["yieldRel_HMS_track"][0])== False):
+            a_fit_HMS_trVSrate, cov_HMS_trVSrate = curve_fit(linfunc,yield_data["rate_HMS"]/1000, yield_data["yieldRel_HMS_track"], sigma=yield_data["uncern_yieldRel_HMS_track"], absolute_sigma = True)
+            inter_HMS_trVSrate = a_fit_HMS_trVSrate[0]
+            slope_HMS_trVSrate = a_fit_HMS_trVSrate[1]
+            d_inter_HMS_trVSrate = np.sqrt(cov_HMS_trVSrate[0][0])
+            d_slope_HMS_trVSrate = np.sqrt(cov_HMS_trVSrate[1][1])
+        
         plt.errorbar(yield_data["rate_HMS"]/1000,yield_data["yieldRel_HMS_track"],yerr=yield_data["yieldRel_HMS_track"]*yield_data["uncern_yieldRel_HMS_track"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["rate_HMS"]/1000,yield_data["yieldRel_HMS_track"],color='blue',zorder=4,label="_nolegend_")
        
-        # plot the line of best fit
-        #coeff_HMS_trVSrate = np.polyfit(yield_data["rate_HMS"], yield_data["yieldRel_HMS_track"], 1)
-        #poly_HMS_trVSrate = np.poly1d(coeff_HMS_trVSrate)
-        #plt.plot(yield_data["rate_HMS"]/1000, poly_HMS_trVSrate(yield_data["yieldRel_HMS_track"]), color='green', label='Line of Best Fit')
+        if(np.isnan(yield_data["yieldRel_HMS_track"][0])== False):
+            yfit = (slope_HMS_trVSrate)*(yield_data["rate_HMS"]/1000) + inter_HMS_trVSrate
+            plt.plot(yield_data["rate_HMS"]/1000, yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_trVSrate, d_slope_HMS_trVSrate) + "\n intercept = %f +/- %f" %(inter_HMS_trVSrate, d_inter_HMS_trVSrate))
+    
         
         #yield_data["m0_rate_HMS_track"] = linear_plot(yield_data["rate_HMS"]/1000,yield_data["yieldRel_HMS_track"],None,yield_data["uncern_yieldRel_HMS_track"],xvalmax=max((yield_data["rate_HMS"])/1000)+5)
         #plt.errorbar(yield_data["rate_HMS"]/1000,yield_data["yieldRel_HMS_CPULT_track"],yerr=yield_data["yieldRel_HMS_CPULT_track"]*yield_data["uncern_yieldRel_HMS_CPULT_track"],color='black',linestyle='None',zorder=5)
         #plt.scatter(yield_data["rate_HMS"]/1000,yield_data["yieldRel_HMS_CPULT_track"],color='red',zorder=6)
         plt.ylabel('Rel. Yield track', fontsize=16)
         plt.xlabel('HMS %s Rate [kHz]' % (str(HMSscaler)), fontsize =16)
-        plt.legend()
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('HMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =16)
         elif target == 'LH2' :
@@ -960,21 +1078,29 @@ def plot_yield():
         plt.subplot(2,3,4)    
         plt.grid(zorder=1)
         plt.xlim(0,(max(yield_data["rate_SHMS"])/1000)+5)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,(max(yield_data["rate_SHMS"])/1000)+5], [1,1], 'r-',zorder=2)
+        
+        if(np.isnan(yield_data["yieldRel_SHMS_scaler"][0])== False):
+            a_fit_SHMS_scalerVSrate, cov_SHMS_scalerVSrate = curve_fit(linfunc,yield_data["rate_SHMS"]/1000, yield_data["yieldRel_SHMS_scaler"], sigma=yield_data["uncern_yieldRel_SHMS_scaler"], absolute_sigma = True)
+            inter_SHMS_scalerVSrate = a_fit_SHMS_scalerVSrate[0]
+            slope_SHMS_scalerVSrate = a_fit_SHMS_scalerVSrate[1]
+            d_inter_SHMS_scalerVSrate = np.sqrt(cov_SHMS_scalerVSrate[0][0])
+            d_slope_SHMS_scalerVSrate = np.sqrt(cov_SHMS_scalerVSrate[1][1])
+        
         plt.errorbar(yield_data["rate_SHMS"]/1000,yield_data["yieldRel_SHMS_scaler"],yerr=yield_data["yieldRel_SHMS_scaler"]*yield_data["uncern_yieldRel_SHMS_scaler"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["rate_SHMS"]/1000,yield_data["yieldRel_SHMS_scaler"],color='blue',zorder=4,label="_nolegend_")
         #yield_data["m0_rate_SHMS_scaler"] = linear_plot(yield_data["rate_SHMS"]/1000,yield_data["yieldRel_SHMS_scaler"],None,yield_data["uncern_yieldRel_SHMS_scaler"],xvalmax=max((yield_data["rate_SHMS"])/1000)+5)
     
-        #plot line of best fit
-        #coeff_SHMS_scalerVSrate = np.polyfit(yield_data["rate_SHMS"], yield_data["yieldRel_SHMS_scaler"], 1)
-        #poly_SHMS_scalerVSrate = np.poly1d(coeff_SHMS_scalerVSrate)
-        #plt.plot(yield_data["rate_SHMS"]/1000, poly_SHMS_scalerVSrate(yield_data["yieldRel_SHMS_scaler"]), color='green', label='Line of Best Fit')
+        if(np.isnan(yield_data["yieldRel_SHMS_scaler"][0])== False):
+            yfit = (slope_SHMS_scalerVSrate)*(yield_data["rate_SHMS"]/1000) + inter_SHMS_scalerVSrate
+            plt.plot(yield_data["rate_SHMS"]/1000, yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_scalerVSrate, d_slope_SHMS_scalerVSrate) + "\n intercept = %f +/- %f" %(inter_SHMS_scalerVSrate, d_inter_SHMS_scalerVSrate))
+    
     
 
         plt.ylabel('Rel. Yield %s' % (str(SHMSscaler)), fontsize=16)
         plt.xlabel('SHMS %s Rate [kHz]' % (str(SHMSscaler)), fontsize =16)
-        plt.legend()
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('SHMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =16)
         elif target == 'LH2' :
@@ -986,22 +1112,31 @@ def plot_yield():
         plt.subplot(2,3,5)    
         plt.grid(zorder=1)
         plt.xlim(0,(max(yield_data["rate_SHMS"])/1000)+5)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,(max(yield_data["rate_SHMS"])/1000)+5], [1,1], 'r-',zorder=2)
+        
+        if(np.isnan(yield_data["yieldRel_SHMS_notrack"][0])== False):
+            a_fit_SHMS_ntrVSrate, cov_SHMS_ntrVSrate = curve_fit(linfunc,yield_data["rate_SHMS"]/1000, yield_data["yieldRel_SHMS_notrack"], sigma=yield_data["uncern_yieldRel_SHMS_notrack"], absolute_sigma = True)
+            inter_SHMS_ntrVSrate = a_fit_SHMS_ntrVSrate[0]
+            slope_SHMS_ntrVSrate = a_fit_SHMS_ntrVSrate[1]
+            d_inter_SHMS_ntrVSrate = np.sqrt(cov_SHMS_ntrVSrate[0][0])
+            d_slope_SHMS_ntrVSrate = np.sqrt(cov_SHMS_ntrVSrate[1][1])
+        
         plt.errorbar(yield_data["rate_SHMS"]/1000,yield_data["yieldRel_SHMS_notrack"],yerr=yield_data["yieldRel_SHMS_notrack"]*yield_data["uncern_yieldRel_SHMS_notrack"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["rate_SHMS"]/1000,yield_data["yieldRel_SHMS_notrack"],color='blue',zorder=4,label="_nolegend_")
         #yield_data["m0_rate_SHMS_notrack"] = linear_plot(yield_data["rate_SHMS"]/1000,yield_data["yieldRel_SHMS_notrack"],None,yield_data["uncern_yieldRel_SHMS_notrack"],xvalmax=max((yield_data["rate_SHMS"])/1000)+5)
         #plt.errorbar(yield_data["rate_SHMS"]/1000,yield_data["yieldRel_SHMS_CPULT_notrack"],yerr=yield_data["yieldRel_SHMS_CPULT_notrack"]*yield_data["uncern_yieldRel_SHMS_CPULT_notrack"],color='black',linestyle='None',zorder=5)
         #plt.scatter(yield_data["rate_SHMS"]/1000,yield_data["yieldRel_SHMS_CPULT_notrack"],color='red',zorder=6)
         
-        #plot line of best fit
-        #coeff_SHMS_ntrVSrate = np.polyfit(yield_data["rate_SHMS"], yield_data["yieldRel_SHMS_notrack"], 1)
-        #poly_SHMS_ntrVSrate = np.poly1d(coeff_SHMS_ntrVSrate)
-        #plt.plot(yield_data["rate_SHMS"]/1000, poly_SHMS_ntrVSrate(yield_data["yieldRel_SHMS_notrack"]), color='green', label='Line of Best Fit')
+        if(np.isnan(yield_data["yieldRel_SHMS_notrack"][0])== False):
+            yfit = (slope_SHMS_ntrVSrate)*(yield_data["rate_SHMS"]/1000) + inter_SHMS_ntrVSrate
+            plt.plot(yield_data["rate_SHMS"]/1000, yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_ntrVSrate, d_slope_SHMS_ntrVSrate) + "\n intercept = %f +/- %f" %(inter_SHMS_ntrVSrate, d_inter_SHMS_ntrVSrate))
+    
+        
         
         plt.ylabel('Rel. Yield no track', fontsize=16)
         plt.xlabel('SHMS %s Rate [kHz]' % (str(SHMSscaler)), fontsize =16)
-        plt.legend()
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('SHMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =16)
         elif target == 'LH2' :
@@ -1013,23 +1148,30 @@ def plot_yield():
         plt.subplot(2,3,6)    
         plt.grid(zorder=1)
         plt.xlim(0,(max(yield_data["rate_SHMS"])/1000)+5)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,(max(yield_data["rate_SHMS"])/1000)+5], [1,1], 'r-',zorder=2)
+        
+        if(np.isnan(yield_data["yieldRel_SHMS_track"][0])== False):
+            a_fit_SHMS_trVSrate, cov_SHMS_trVSrate = curve_fit(linfunc,yield_data["rate_SHMS"]/1000, yield_data["yieldRel_SHMS_track"], sigma=yield_data["uncern_yieldRel_SHMS_track"], absolute_sigma = True)
+            inter_SHMS_trVSrate = a_fit_SHMS_trVSrate[0]
+            slope_SHMS_trVSrate = a_fit_SHMS_trVSrate[1]
+            d_inter_SHMS_trVSrate = np.sqrt(cov_SHMS_trVSrate[0][0])
+            d_slope_SHMS_trVSrate = np.sqrt(cov_SHMS_trVSrate[1][1])
+        
         plt.errorbar(yield_data["rate_SHMS"]/1000,yield_data["yieldRel_SHMS_track"],yerr=yield_data["yieldRel_SHMS_track"]*yield_data["uncern_yieldRel_SHMS_track"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["rate_SHMS"]/1000,yield_data["yieldRel_SHMS_track"],color='blue',zorder=4,label="_nolegend_")
         #yield_data["m0_rate_SHMS_track"] = linear_plot(yield_data["rate_SHMS"]/1000,yield_data["yieldRel_SHMS_track"],None,yield_data["uncern_yieldRel_SHMS_track"],xvalmax=max((yield_data["rate_SHMS"])/1000)+5)
         #plt.errorbar(yield_data["rate_SHMS"]/1000,yield_data["yieldRel_SHMS_CPULT_track"],yerr=yield_data["yieldRel_SHMS_CPULT_track"]*yield_data["uncern_yieldRel_SHMS_CPULT_track"],color='black',linestyle='None',zorder=5)
         #plt.scatter(yield_data["rate_SHMS"]/1000,yield_data["yieldRel_SHMS_CPULT_track"],color='red',zorder=6)
         
-        # plot the line of best fit
-        #coeff_SHMS_trVSrate = np.polyfit(yield_data["rate_SHMS"], yield_data["yieldRel_SHMS_track"], 1)
-        #poly_SHMS_trVSrate = np.poly1d(coeff_SHMS_trVSrate)
-        #plt.plot(yield_data["rate_SHMS"]/1000, poly_SHMS_trVSrate(yield_data["yieldRel_SHMS_track"]), color='green', label='Line of Best Fit')
-        
+        if(np.isnan(yield_data["yieldRel_SHMS_track"][0])== False):
+            yfit = (slope_SHMS_trVSrate)*(yield_data["rate_SHMS"]/1000) + inter_SHMS_trVSrate
+            plt.plot(yield_data["rate_SHMS"]/1000, yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_trVSrate, d_slope_SHMS_trVSrate) + "\n intercept = %f +/- %f" %(inter_SHMS_trVSrate, d_inter_SHMS_trVSrate))
+    
         
         plt.ylabel('Rel. Yield track', fontsize=16)
         plt.xlabel('SHMS %s Rate [kHz]' % (str(SHMSscaler)), fontsize =16)
-        plt.legend()
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('SHMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =16)
         elif target == 'LH2' :
@@ -1144,12 +1286,27 @@ def plot_yield():
         plt.subplot(2,4,1)    
         plt.grid(zorder=1)
         plt.xlim(0,100)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,100], [1,1], 'r-',zorder=2)
+        
+        ''' if(np.isnan(yield_data["yieldRel_HMS_scaler"][0])== False):
+            a_fit_HMS_scalerVScurrent, cov_HMS_scalerVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_HMS_scaler"], sigma=yield_data["uncern_yieldRel_HMS_scaler"], absolute_sigma = True)
+            inter_HMS_scalerVScurrent = a_fit_HMS_scalerVScurrent[0]
+            slope_HMS_scalerVScurrent = a_fit_HMS_scalerVScurrent[1]
+            d_inter_HMS_scalerVScurrent = np.sqrt(cov_HMS_scalerVScurrent[0][0])
+            d_slope_HMS_scalerVScurrent = np.sqrt(cov_HMS_scalerVScurrent[1][1])'''
+        
         plt.errorbar(yield_data["current"],yield_data["yieldRel_HMS_scaler"],yerr=yield_data["yieldRel_HMS_scaler"]*yield_data["uncern_yieldRel_HMS_scaler"],color='black',linestyle='None',zorder=3,label="_nolegend_")
-        plt.scatter(yield_data["current"],yield_data["yieldRel_HMS_scaler"],color='blue',zorder=4,label="_nolegend_")
+        plt.scatter(yield_data["current"],yield_data["yieldRel_HMS_scaler"],color='blue',zorder=4, label = "_nolegend_")
+        
+        '''if(np.isnan(yield_data["yieldRel_HMS_scaler"][0])== False):
+            yfit = (slope_HMS_scalerVScurrent/inter_HMS_scalerVScurrent)*yield_data["current"] + 1.0
+            plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_scalerVScurrent, d_slope_HMS_scalerVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_scalerVScurrent, d_inter_HMS_scalerVScurrent))
+        '''
+        
         plt.ylabel('Rel. Yield %s' % (str(HMSscaler)), fontsize=16)
         plt.xlabel('Current [uA]', fontsize =12)
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('HMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =12)
         elif target == 'LH2' :
@@ -1161,12 +1318,27 @@ def plot_yield():
         plt.subplot(2,4,2)    
         plt.grid(zorder=1)
         #plt.xlim(0,100)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,100], [1,1], 'r-',zorder=2)
+        
+        '''if(np.isnan(yield_data["yieldRel_HMS_track"][0])== False):
+            a_fit_HMS_trVScurrent, cov_HMS_trVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_HMS_track"], sigma=yield_data["uncern_yieldRel_HMS_track"], absolute_sigma = True)
+            inter_HMS_trVScurrent = a_fit_HMS_trVScurrent[0]
+            slope_HMS_trVScurrent = a_fit_HMS_trVScurrent[1]
+            d_inter_HMS_trVScurrent = np.sqrt(cov_HMS_trVScurrent[0][0])
+            d_slope_HMS_trVScurrent = np.sqrt(cov_HMS_trVScurrent[1][1])'''
+        
         plt.errorbar(yield_data["current"],yield_data["yieldRel_HMS_track"],yerr=yield_data["yieldRel_HMS_track"]*yield_data["uncern_yieldRel_HMS_track"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_HMS_track"],color='blue',zorder=4,label="_nolegend_")
+        
+        '''if(np.isnan(yield_data["yieldRel_HMS_track"][0])== False):
+            yfit = (slope_HMS_trVScurrent/inter_HMS_trVScurrent)*yield_data["current"] + 1.0
+            plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent, d_slope_HMS_trVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_trVScurrent, d_inter_HMS_trVScurrent))
+         '''
+        
         plt.ylabel('Rel. Yield track', fontsize=16)
         plt.xlabel('Current [uA]', fontsize =12)
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('HMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =12)
         elif target == 'LH2' :
@@ -1189,8 +1361,8 @@ def plot_yield():
         else :
             plt.title('HMS Carbon %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =12)
 
-    #TLT vs Current
-    plt.subplot(2,4,4)    
+    #TLT vs Current 
+    '''plt.subplot(2,4,4)    
     plt.grid(zorder=1)
     #plt.xlim(0,100)
     plt.errorbar(yield_data["current"],yield_data["TLT"],yerr=yield_data["TLT"]*yield_data["uncern_TLT"],color='black',linestyle='None',zorder=3,label="_nolegend_")
@@ -1203,6 +1375,57 @@ def plot_yield():
         plt.title('LH2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =12)
     else :
         plt.title('Carbon %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =12)
+    '''
+
+#TLT vs Rate
+
+   
+
+
+    plt.subplot(2,4,4)    
+    plt.grid(zorder=1)
+    #plt.xlim(0,100)
+    plt.ylabel('TLT', fontsize=16)
+    
+   
+    
+    if "SHMS" in inp_name.upper():
+        plt.xlabel('SHMS ElReal (PS2) Rate (kHz)', fontsize =12)
+        plt.errorbar(yield_data["rate_SHMS"]/1000,yield_data["TLT"],yerr=yield_data["TLT"]*yield_data["uncern_TLT"],color='black',linestyle='None',zorder=3,label="_nolegend_")
+        plt.scatter(yield_data["rate_SHMS"]/1000,yield_data["TLT"],color='blue',zorder=4,label="_nolegend_")
+        a_fit_SHMS_tltVSrate, cov_SHMS_tltVSrate = curve_fit(linfunc,yield_data["rate_SHMS"]/1000, yield_data["TLT"], sigma=yield_data["uncern_TLT"], absolute_sigma = True)
+        inter_SHMS_tltVSrate = a_fit_SHMS_tltVSrate[0]
+        slope_SHMS_tltVSrate = a_fit_SHMS_tltVSrate[1]
+        d_inter_SHMS_tltVSrate = np.sqrt(cov_SHMS_tltVSrate[0][0])
+        d_slope_SHMS_tltVSrate = np.sqrt(cov_SHMS_tltVSrate[1][1])
+        yfit = (slope_SHMS_tltVSrate)*(yield_data["rate_SHMS"]/1000) + inter_SHMS_tltVSrate
+        #plt.plot(yield_data["rate_SHMS"]/1000, yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_tltVSrate, d_slope_SHMS_tltVSrate) + "\n intercept = %f +/- %f" %(inter_SHMS_tltVSrate, d_inter_SHMS_tltVSrate))
+    
+    
+    else: 
+        plt.xlabel('HMS ElReal (PS4) Rate (kHz)', fontsize =12)
+        plt.errorbar(yield_data["rate_HMS"]/1000,yield_data["TLT"],yerr=yield_data["TLT"]*yield_data["uncern_TLT"],color='black',linestyle='None',zorder=3,label="_nolegend_")
+        plt.scatter(yield_data["rate_HMS"]/1000,yield_data["TLT"],color='blue',zorder=4,label="_nolegend_")
+        a_fit_HMS_tltVSrate, cov_HMS_tltVSrate = curve_fit(linfunc,yield_data["rate_HMS"]/1000, yield_data["TLT"], sigma=yield_data["uncern_TLT"], absolute_sigma = True)
+        inter_HMS_tltVSrate = a_fit_HMS_tltVSrate[0]
+        slope_HMS_tltVSrate = a_fit_HMS_tltVSrate[1]
+        d_inter_HMS_tltVSrate = np.sqrt(cov_HMS_tltVSrate[0][0])
+        d_slope_HMS_tltVSrate = np.sqrt(cov_HMS_tltVSrate[1][1])
+        yfit = (slope_HMS_tltVSrate)*(yield_data["rate_HMS"]/1000) + inter_HMS_tltVSrate
+        #plt.plot(yield_data["rate_HMS"]/1000, yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_tltVSrate, d_slope_HMS_tltVSrate) + "\n intercept = %f +/- %f" %(inter_HMS_tltVSrate, d_inter_HMS_tltVSrate))
+    
+    plt.legend(prop={'size' :7})
+    
+    
+    
+    if target == 'LD2' :
+        plt.title('LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =12)
+    elif target == 'LH2' :
+        plt.title('LH2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =12)
+    else :
+        plt.title('Carbon %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =12)
+
+
 
     #CPULT vs Current
     plt.subplot(2,4,8)    
@@ -1224,12 +1447,27 @@ def plot_yield():
         plt.subplot(2,4,5)    
         plt.grid(zorder=1)
         plt.xlim(0,100)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,100], [1,1], 'r-',zorder=2)
+        
+        '''if(np.isnan(yield_data["yieldRel_SHMS_scaler"][0])== False):
+            a_fit_SHMS_scalerVScurrent, cov_SHMS_scalerVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_SHMS_scaler"], sigma=yield_data["uncern_yieldRel_SHMS_scaler"], absolute_sigma = True)
+            inter_SHMS_scalerVScurrent = a_fit_SHMS_scalerVScurrent[0]
+            slope_SHMS_scalerVScurrent = a_fit_SHMS_scalerVScurrent[1]
+            d_inter_SHMS_scalerVScurrent = np.sqrt(cov_SHMS_scalerVScurrent[0][0])
+            d_slope_SHMS_scalerVScurrent = np.sqrt(cov_SHMS_scalerVScurrent[1][1])'''
+        
         plt.errorbar(yield_data["current"],yield_data["yieldRel_SHMS_scaler"],yerr=yield_data["yieldRel_SHMS_scaler"]*yield_data["uncern_yieldRel_SHMS_scaler"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_SHMS_scaler"],color='blue',zorder=4,label="_nolegend_")
+        
+        '''if(np.isnan(yield_data["yieldRel_SHMS_scaler"][0])== False):
+            yfit = (slope_SHMS_scalerVScurrent/inter_SHMS_scalerVScurrent)*yield_data["current"] + 1.0
+            plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_scalerVScurrent, d_slope_SHMS_scalerVScurrent) + "\n intercept = %f +/- %f" %(inter_SHMS_scalerVScurrent, d_inter_SHMS_scalerVScurrent))
+        '''
+        
         plt.ylabel('Rel. Yield %s' % (str(SHMSscaler)), fontsize=16)
         plt.xlabel('Current [uA]', fontsize =12)
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('SHMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =12)
         elif target == 'LH2' :
@@ -1241,12 +1479,26 @@ def plot_yield():
         plt.subplot(2,4,6)    
         plt.grid(zorder=1)
         #plt.xlim(0,100)
-        plt.ylim(0.96,1.04)
+        plt.ylim(0.9,1.04)
         plt.plot([0,100], [1,1], 'r-',zorder=2)
+        
+        ''' if(np.isnan(yield_data["yieldRel_SHMS_track"][0])== False):
+            a_fit_SHMS_trVScurrent, cov_SHMS_trVScurrent = curve_fit(linfunc,yield_data["current"], yield_data["yieldRel_SHMS_track"], sigma=yield_data["uncern_yieldRel_SHMS_track"], absolute_sigma = True)
+            inter_SHMS_trVScurrent = a_fit_SHMS_trVScurrent[0]
+            slope_SHMS_trVScurrent = a_fit_SHMS_trVScurrent[1]
+            d_inter_SHMS_trVScurrent = np.sqrt(cov_SHMS_trVScurrent[0][0])
+            d_slope_SHMS_trVScurrent = np.sqrt(cov_SHMS_trVScurrent[1][1])'''
+        
         plt.errorbar(yield_data["current"],yield_data["yieldRel_SHMS_track"],yerr=yield_data["yieldRel_SHMS_track"]*yield_data["uncern_yieldRel_SHMS_track"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_SHMS_track"],color='blue',zorder=4,label="_nolegend_")
+        
+        ''' if(np.isnan(yield_data["yieldRel_SHMS_track"][0])== False):
+            yfit = (slope_SHMS_trVScurrent/inter_SHMS_trVScurrent)*yield_data["current"] + 1.0
+            plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent, d_slope_SHMS_trVScurrent) + "\n intercept = %f +/- %f" %(inter_SHMS_trVScurrent, d_inter_SHMS_trVScurrent))
+        '''     
         plt.ylabel('Rel. Yield track', fontsize=16)
         plt.xlabel('Current [uA]', fontsize =12)
+        plt.legend(prop={'size' :7})
         if target == 'LD2' :
             plt.title('SHMS LD2 %s-%s' % (int(min(yield_data["run number"])),int(max(yield_data["run number"]))), fontsize =12)
         elif target == 'LH2' :
@@ -1295,6 +1547,8 @@ def plot_yield():
     #print("SHMS track v. rate: slope + intercept = ", poly_SHMS_trVSrate, "\n")
     #print(slope_HMS_scalerVScurrent, d_slope_HMS_scalerVScurrent, inter_HMS_scalerVScurrent, d_inter_HMS_scalerVScurrent)
     
+   
+   
     return yield_data
     
 ################################################################################################################################################
