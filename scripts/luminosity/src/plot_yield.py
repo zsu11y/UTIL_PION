@@ -795,7 +795,7 @@ def plot_yield():
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_ntrVScurrent, d_slope_HMS_ntrVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_ntrVScurrent, d_inter_HMS_ntrVScurrent) + "\n reduced chi^2 = %f" %(chisqr_HMS_ntrVScurrent_red))
             plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_ntrVScurrent2, d_slope_HMS_ntrVScurrent2) + "\n fixed intercept = %f" %(1.000000) + "\n reduced chi^2 = %f" %(chisqr_HMS_ntrVScurrent_red2))
             if "C" in inp_name:
-                plt.plot(yield_data["current"], yfit3, color = 'purple', label = "slope = %f +/- %f" %(slope_HMS_ntrVScurrent3, d_slope_HMS_ntrVScurrent3) + "\n intercept = %f +/- %f" %(inter_HMS_ntrVScurrent3, d_inter_HMS_ntrVScurrent3) + "\n reduced chi^2 = %f" %(chisqr_HMS_ntrVScurrent_red3))
+                plt.plot(yield_data["current"], yfit3, color = 'purple', label = "fixed slope = 0 "  + "\n intercept = %f +/- %f" %(inter_HMS_ntrVScurrent3, d_inter_HMS_ntrVScurrent3) + "\n reduced chi^2 = %f" %(chisqr_HMS_ntrVScurrent_red3))
 
 
        
@@ -865,7 +865,7 @@ def plot_yield():
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent, d_slope_HMS_trVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_trVScurrent, d_inter_HMS_trVScurrent) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red))
             plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent2, d_slope_HMS_trVScurrent2) + "\n fixed intercept = %f" %(1.000000) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red2))
             if "C" in inp_name:
-                plt.plot(yield_data["current"], yfit3, color = 'purple', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent3, d_slope_HMS_trVScurrent3) + "\n intercept = %f +/- %f" %(inter_HMS_trVScurrent3, d_inter_HMS_trVScurrent3) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red3))
+                plt.plot(yield_data["current"], yfit3, color = 'purple', label = "fixed slope = 0"  + "\n intercept = %f +/- %f" %(inter_HMS_trVScurrent3, d_inter_HMS_trVScurrent3) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red3))
 
         
         plt.ylabel('Rel. Yield track', fontsize=16)
@@ -974,7 +974,7 @@ def plot_yield():
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_ntrVScurrent, d_slope_SHMS_ntrVScurrent) + "\n intercept = %f +/- %f" %(inter_SHMS_ntrVScurrent, d_inter_SHMS_ntrVScurrent) + "\n reduced chi^2 = %f" %(chisqr_SHMS_ntrVScurrent_red))
             plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_ntrVScurrent2, d_slope_SHMS_ntrVScurrent2) + "\n fixed intercept = %f" %(1.000000)+ "\n reduced chi^2 = %f" %(chisqr_SHMS_ntrVScurrent_red2))
             if "C" in inp_name:
-                plt.plot(yield_data["current"], yfit3, color = 'purple', label = "slope = %f +/- %f" %(slope_SHMS_ntrVScurrent3, d_slope_SHMS_ntrVScurrent3) + "\n intercept = %f +/- %f" %(inter_SHMS_ntrVScurrent3, d_inter_SHMS_ntrVScurrent3) + "\n reduced chi^2 = %f" %(chisqr_SHMS_ntrVScurrent_red3))
+                plt.plot(yield_data["current"], yfit3, color = 'purple', label = "fixed slope = 0" + "\n intercept = %f +/- %f" %(inter_SHMS_ntrVScurrent3, d_inter_SHMS_ntrVScurrent3) + "\n reduced chi^2 = %f" %(chisqr_SHMS_ntrVScurrent_red3))
 
         
         
@@ -1044,7 +1044,7 @@ def plot_yield():
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent, d_slope_SHMS_trVScurrent) + "\n intercept = %f +/- %f" %(inter_SHMS_trVScurrent, d_inter_SHMS_trVScurrent) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red))
             plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent2, d_slope_SHMS_trVScurrent2) + "\n fixed intercept = %f" %(1.000000) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red2))
             if "C" in inp_name:
-                plt.plot(yield_data["current"], yfit3, color = 'purple', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent3, d_slope_SHMS_trVScurrent3) + "\n intercept = %f +/- %f" %(inter_SHMS_trVScurrent3, d_inter_SHMS_trVScurrent3) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red3))
+                plt.plot(yield_data["current"], yfit3, color = 'purple', label = "fixed slope = 0"  + "\n intercept = %f +/- %f" %(inter_SHMS_trVScurrent3, d_inter_SHMS_trVScurrent3) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red3))
 
         
        
