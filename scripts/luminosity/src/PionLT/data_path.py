@@ -30,7 +30,7 @@ def get_file(inp_name,SCRIPTPATH):
                 inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi9-2/pt1/lumi_data_LD2.csv"
                 out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi9-2/pt1/yield_data_LD2.csv"
                 print("\nGrabbing input...\n\n%s" % str(inp_f))
-            if "C" in inp_name.upper():
+            if "C" in inp_name:
                 target = "carbon"
                 inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi9-2/pt1/lumi_data_Carbon.csv"
                 out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi9-2/pt1/yield_data_Carbon.csv"
@@ -46,7 +46,7 @@ def get_file(inp_name,SCRIPTPATH):
                 inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi9-2/pt2/lumi_data_LD2.csv"
                 out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi9-2/pt2/yield_data_LD2.csv"
                 print("\nGrabbing input...\n\n%s" % str(inp_f))
-            if "C" in inp_name.upper():
+            if "C" in inp_name:
                 target = "carbon"
                 inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi9-2/pt2/lumi_data_Carbon.csv"
                 out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi9-2/pt2/yield_data_Carbon.csv"
@@ -63,7 +63,7 @@ def get_file(inp_name,SCRIPTPATH):
                 inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi6-4/SHMS/lumi_data_LD2.csv"
                 out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi6-4/SHMS/yield_data_LD2.csv"
                 print("\nGrabbing input...\n\n%s" % str(inp_f))
-            if "C" in inp_name.upper():
+            if "C" in inp_name:
                 target = "carbon"
                 inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi6-4/SHMS/lumi_data_Carbon.csv"
                 out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi6-4/SHMS/yield_data_Carbon.csv"
@@ -79,7 +79,7 @@ def get_file(inp_name,SCRIPTPATH):
                 inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi6-4/HMS/lumi_data_LD2.csv"
                 out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi6-4/HMS/yield_data_LD2.csv"
                 print("\nGrabbing input...\n\n%s" % str(inp_f))
-            if "C" in inp_name.upper():
+            if "C" in inp_name:
                 target = "carbon"
                 inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi6-4/HMS/lumi_data_Carbon.csv"
                 out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi6-4/HMS/yield_data_Carbon.csv"
@@ -97,7 +97,7 @@ def get_file(inp_name,SCRIPTPATH):
                     inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2022/6-4/SHMS/lumi_data_LD2.csv"
                     out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2022/6-4/SHMS/yield_data_LD2.csv"
                     print("\nGrabbing input...\n\n%s" % str(inp_f))
-            if "C" in inp_name.upper():
+            if "C" in inp_name:
                     target = "carbon"
                     inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2022/6-4/SHMS/lumi_data_Carbon.csv"
                     out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2022/6-4/SHMS/yield_data_Carbon.csv"
@@ -113,7 +113,7 @@ def get_file(inp_name,SCRIPTPATH):
                     inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2022/6-4/HMS/lumi_data_LD2.csv"
                     out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2022/6-4/HMS/yield_data_LD2.csv"
                     print("\nGrabbing input...\n\n%s" % str(inp_f))
-            if "C" in inp_name.upper():
+            if "C" in inp_name:
                     target = "carbon"
                     inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2022/6-4/HMS/lumi_data_Carbon.csv"
                     out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2022/6-4/HMS/yield_data_Carbon.csv"
@@ -130,7 +130,7 @@ def get_file(inp_name,SCRIPTPATH):
                     inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2021/7-9/lumi_data_LD2.csv"
                     out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2021/7-9/yield_data_LD2.csv"
                     print("\nGrabbing input...\n\n%s" % str(inp_f))
-            if "C" in inp_name.upper():
+            if "C" in inp_name:
                     target = "carbon"
                     inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2021/7-9/lumi_data_Carbon.csv"
                     out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2021/7-9/yield_data_Carbon.csv"
@@ -148,7 +148,7 @@ def get_file(inp_name,SCRIPTPATH):
                     inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2021/9-2/pt1/lumi_data_LD2.csv"
                     out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2021/9-2/pt1/yield_data_LD2.csv"
                     print("\nGrabbing input...\n\n%s" % str(inp_f))
-                if "C" in inp_name.upper():
+                if "C" in inp_name:
                     target = "carbon"
                     inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2021/9-2/pt1/lumi_data_Carbon.csv"
                     out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2021/9-2/pt1/yield_data_Carbon.csv"
@@ -164,7 +164,7 @@ def get_file(inp_name,SCRIPTPATH):
                     np_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2021/9-2/pt2/lumi_data_LD2.csv"
                     out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2021/9-2/pt2/yield_data_LD2.csv"
                     print("\nGrabbing input...\n\n%s" % str(inp_f))
-                if "C" in inp_name.upper():
+                if "C" in inp_name:
                     target = "carbon"
                     inp_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2021/9-2/pt2/lumi_data_Carbon.csv"
                     out_f = SCRIPTPATH+"/luminosity/OUTPUTS/Lumi2021/9-2/pt2/yield_data_Carbon.csv"
