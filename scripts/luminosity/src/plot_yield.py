@@ -702,6 +702,11 @@ def plot_yield():
         y = slope
         return y
     
+    def quadfunc(x,int,linear , quadratic):
+        
+        y = int  + linear*x+ (quadratic/6400)*(x**(2))
+        return y
+        
     
         
     
@@ -846,6 +851,14 @@ def plot_yield():
             slope_HMS_trVScurrent3 = 0
             d_slope_HMS_trVScurrent3 = 0 #now do for all track plots in HMS and SHMS
             
+            a_fit_HMS_trVScurrent4, cov_HMS_trVScurrent4 = curve_fit(quadfunc,yield_data["current"], yield_data["yieldRel_HMS_track"], p0=[1,0,0] ,sigma=yield_data["uncern_yieldRel_HMS_track"], absolute_sigma = True)
+            inter_HMS_trVScurrent4 = a_fit_HMS_trVScurrent4[0] 
+            linear_HMS_trVScurrent4 = a_fit_HMS_trVScurrent4[1]
+            quadratic_HMS_trVScurrent4 = a_fit_HMS_trVScurrent4[2]
+            d_inter_HMS_trVScurrent4 = np.sqrt(cov_HMS_trVScurrent4[0][0])
+            d_linear_HMS_trVScurrent4 = np.sqrt(cov_HMS_trVScurrent4[1][1])
+            d_quadratic_HMS_trVScurrent4 = np.sqrt(cov_HMS_trVScurrent4[2][2])
+ 
             
             chisqr_HMS_trVScurrent = sum((yield_data["yieldRel_HMS_track"]-linfunc(yield_data["current"],inter_HMS_trVScurrent,slope_HMS_trVScurrent))**2/yield_data["uncern_yieldRel_HMS_track"]**2)
             dof_HMS_trVScurrent = len(yield_data["yieldRel_HMS_track"]) - 2
@@ -858,6 +871,10 @@ def plot_yield():
             chisqr_HMS_trVScurrent3 = sum((yield_data["yieldRel_HMS_track"]-constfunc(yield_data["current"],slope_HMS_trVScurrent3 + 1))**2/yield_data["uncern_yieldRel_HMS_track"]**2)
             dof_HMS_trVScurrent3 = len(yield_data["yieldRel_HMS_track"]) - 2
             chisqr_HMS_trVScurrent_red3 = chisqr_HMS_trVScurrent3/dof_HMS_trVScurrent3
+            
+            chisqr_HMS_trVScurrent4 = sum((yield_data["yieldRel_HMS_track"]-quadfunc(yield_data["current"],inter_HMS_trVScurrent4, linear_HMS_trVScurrent4, quadratic_HMS_trVScurrent4))**2/yield_data["uncern_yieldRel_HMS_track"]**2)
+            dof_HMS_trVScurrent4 = len(yield_data["yieldRel_HMS_track"]) - 2
+            chisqr_HMS_trVScurrent_red4 = chisqr_HMS_trVScurrent4/dof_HMS_trVScurrent4
             
         plt.errorbar(yield_data["current"],yield_data["yieldRel_HMS_track"],yerr=yield_data["yieldRel_HMS_track"]*yield_data["uncern_yieldRel_HMS_track"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_HMS_track"],color='blue',zorder=4,label="_nolegend_")
@@ -872,9 +889,11 @@ def plot_yield():
             yfit = (slope_HMS_trVScurrent)*yield_data["current"] + inter_HMS_trVScurrent
             yfit2 = (slope_HMS_trVScurrent2)*yield_data["current"] + 1.0
             yfit3 = (slope_HMS_trVScurrent3)*yield_data["current"] + inter_HMS_trVScurrent3
+            yfit4 =  inter_HMS_trVScurrent4 + ((linear_HMS_trVScurrent4)*(yield_data["current"])) + ((quadratic_HMS_trVScurrent4)*(yield_data["current"]**(2)))
         
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent, d_slope_HMS_trVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_trVScurrent, d_inter_HMS_trVScurrent) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red))
             plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent2, d_slope_HMS_trVScurrent2) + "\n fixed intercept = %f" %(1.000000) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red2))
+            plt.plot(yield_data["current"], yfit4, color = 'blue', label = "quadratic term = %f +/- %f" %(quadratic_HMS_trVScurrent4, d_quadratic_HMS_trVScurrent4)+ "\n linear term = %f +/- %f" %(linear_HMS_trVScurrent4, d_linear_HMS_trVScurrent4) +"\n intercept = %f +/- %f" %(inter_HMS_trVScurrent4, d_inter_HMS_trVScurrent4) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red4))
             if "C" in inp_name:
                 plt.plot(yield_data["current"], yfit3, color = 'purple', label = "fixed slope = 0"  + "\n intercept = %f +/- %f" %(inter_HMS_trVScurrent3, d_inter_HMS_trVScurrent3) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red3))
 
@@ -970,6 +989,8 @@ def plot_yield():
             chisqr_SHMS_ntrVScurrent3 = sum((yield_data["yieldRel_SHMS_notrack"]-constfunc(yield_data["current"],slope_SHMS_ntrVScurrent3 + 1))**2/yield_data["uncern_yieldRel_SHMS_notrack"]**2)
             dof_SHMS_ntrVScurrent3 = len(yield_data["yieldRel_SHMS_notrack"]) - 2
             chisqr_SHMS_ntrVScurrent_red3 = chisqr_SHMS_ntrVScurrent3/dof_SHMS_ntrVScurrent3
+            
+            
         
         plt.errorbar(yield_data["current"],yield_data["yieldRel_SHMS_notrack"],yerr=yield_data["yieldRel_SHMS_notrack"]*yield_data["uncern_yieldRel_SHMS_notrack"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_SHMS_notrack"],color='blue',zorder=4,label="_nolegend_")
@@ -981,7 +1002,7 @@ def plot_yield():
             yfit = (slope_SHMS_ntrVScurrent)*yield_data["current"] + inter_SHMS_ntrVScurrent
             yfit2 = (slope_SHMS_ntrVScurrent2)*yield_data["current"] + 1.0
             yfit3 = (slope_SHMS_ntrVScurrent3)*yield_data["current"] + inter_SHMS_ntrVScurrent3
-
+            
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_ntrVScurrent, d_slope_SHMS_ntrVScurrent) + "\n intercept = %f +/- %f" %(inter_SHMS_ntrVScurrent, d_inter_SHMS_ntrVScurrent) + "\n reduced chi^2 = %f" %(chisqr_SHMS_ntrVScurrent_red))
             plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_ntrVScurrent2, d_slope_SHMS_ntrVScurrent2) + "\n fixed intercept = %f" %(1.000000)+ "\n reduced chi^2 = %f" %(chisqr_SHMS_ntrVScurrent_red2))
             if "C" in inp_name:
@@ -1028,6 +1049,14 @@ def plot_yield():
             slope_SHMS_trVScurrent3 = 0
             d_slope_SHMS_trVScurrent3 = 0 
             
+            a_fit_SHMS_trVScurrent4, cov_SHMS_trVScurrent4 = curve_fit(quadfunc,yield_data["current"], yield_data["yieldRel_SHMS_track"], sigma=yield_data["uncern_yieldRel_SHMS_track"], absolute_sigma = True)
+            inter_SHMS_trVScurrent4 = a_fit_SHMS_trVScurrent4[0] 
+            linear_SHMS_trVScurrent4 = a_fit_SHMS_trVScurrent4[1]
+            quadratic_SHMS_trVScurrent4 = a_fit_SHMS_trVScurrent4[2]
+            d_inter_SHMS_trVScurrent4 = np.sqrt(cov_SHMS_trVScurrent4[0][0])
+            d_linear_SHMS_trVScurrent4 = np.sqrt(cov_SHMS_trVScurrent4[1][1])
+            d_quadratic_SHMS_trVScurrent4 = np.sqrt(cov_SHMS_trVScurrent4[2][2])
+            
             
             chisqr_SHMS_trVScurrent = sum((yield_data["yieldRel_SHMS_track"]-linfunc(yield_data["current"],inter_SHMS_trVScurrent,slope_SHMS_trVScurrent))**2/yield_data["uncern_yieldRel_SHMS_track"]**2)
             dof_SHMS_trVScurrent = len(yield_data["yieldRel_SHMS_track"]) - 2
@@ -1040,6 +1069,10 @@ def plot_yield():
             chisqr_SHMS_trVScurrent3 = sum((yield_data["yieldRel_SHMS_track"]-constfunc(yield_data["current"],slope_SHMS_trVScurrent3 + 1))**2/yield_data["uncern_yieldRel_SHMS_track"]**2)
             dof_SHMS_trVScurrent3 = len(yield_data["yieldRel_SHMS_track"]) - 2
             chisqr_SHMS_trVScurrent_red3 = chisqr_SHMS_trVScurrent3/dof_SHMS_trVScurrent3
+            
+            chisqr_SHMS_trVScurrent4 = sum((yield_data["yieldRel_SHMS_track"]-quadfunc(yield_data["current"],inter_SHMS_trVScurrent4, linear_SHMS_trVScurrent4, quadratic_SHMS_trVScurrent4))**2/yield_data["uncern_yieldRel_SHMS_track"]**2)
+            dof_SHMS_trVScurrent4 = len(yield_data["yieldRel_SHMS_track"]) - 2
+            chisqr_SHMS_trVScurrent_red4 = chisqr_SHMS_trVScurrent4/dof_SHMS_trVScurrent4
         
         plt.errorbar(yield_data["current"],yield_data["yieldRel_SHMS_track"],yerr=yield_data["yieldRel_SHMS_track"]*yield_data["uncern_yieldRel_SHMS_track"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_SHMS_track"],color='blue',zorder=4,label="_nolegend_")
@@ -1052,8 +1085,12 @@ def plot_yield():
             yfit = (slope_SHMS_trVScurrent)*yield_data["current"] + inter_SHMS_trVScurrent
             yfit2 = (slope_SHMS_trVScurrent2)*yield_data["current"] + 1.0
             yfit3 = (slope_SHMS_trVScurrent3)*yield_data["current"] + inter_SHMS_trVScurrent3
+            yfit4 =  inter_SHMS_trVScurrent4 + ((linear_SHMS_trVScurrent4)*(yield_data["current"])) + ((quadratic_SHMS_trVScurrent4)*(yield_data["current"]**(1/2)))
+
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent, d_slope_SHMS_trVScurrent) + "\n intercept = %f +/- %f" %(inter_SHMS_trVScurrent, d_inter_SHMS_trVScurrent) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red))
             plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent2, d_slope_SHMS_trVScurrent2) + "\n fixed intercept = %f" %(1.000000) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red2))
+            plt.plot(yield_data["current"], yfit4, color = 'blue', label = "quadratic term = %f +/- %f" %(quadratic_SHMS_trVScurrent4, d_quadratic_SHMS_trVScurrent4)+ "\n linear term = %f +/- %f" %(linear_SHMS_trVScurrent4, d_linear_SHMS_trVScurrent4) +"\n intercept = %f +/- %f" %(inter_SHMS_trVScurrent4, d_inter_SHMS_trVScurrent4) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red4))
+            
             if "C" in inp_name:
                 plt.plot(yield_data["current"], yfit3, color = 'purple', label = "fixed slope = 0"  + "\n intercept = %f +/- %f" %(inter_SHMS_trVScurrent3, d_inter_SHMS_trVScurrent3) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red3))
 
