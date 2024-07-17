@@ -293,17 +293,17 @@ def scaler(PS_names, HMS_PS, SHMS_PS, COIN_PS, thres_curr, report_current, runNu
 
     # Define counter for trigger of interest
     for ps in PS_names:
-        if ps is "PS1":
+        if ps == "PS1":
             shms_ps_ix = 0
-        if ps is "PS2":
+        if ps == "PS2":
             shms_ps_ix = 1
-        if ps is "PS3":
+        if ps == "PS3":
             hms_ps_ix = 2
-        if ps is "PS4":
+        if ps == "PS4":
             hms_ps_ix = 3
-        if ps is "PS5":
+        if ps == "PS5":
             coin_ps_ix = 4
-        if ps is "PS6":
+        if ps == "PS6":
             coin_ps_ix = 5
 
     try:
