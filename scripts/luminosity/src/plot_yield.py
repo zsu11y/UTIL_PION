@@ -504,31 +504,94 @@ def calc_yield():
 
  # if target is LH2, normalize to minimum current, if target is Carbon, normalize to error weighted average of yields
     if "LH2" in inp_name.upper():
-        yieldRel_SHMS_scaler = yield_dict["yield_SHMS_scaler"]/yield_dict["min_yield_SHMS_scaler"]
-        yieldRel_SHMS_notrack = yield_dict["yield_SHMS_notrack"]/yield_dict["min_yield_SHMS_notrack"]
-        yieldRel_SHMS_track = yield_dict["yield_SHMS_track"]/yield_dict["min_yield_SHMS_track"]
-        yield_dict.update({"yieldRel_SHMS_scaler" : yieldRel_SHMS_scaler})
-        yield_dict.update({"yieldRel_SHMS_notrack" : yieldRel_SHMS_notrack})
-        yield_dict.update({"yieldRel_SHMS_track" : yieldRel_SHMS_track})
+        
+        
+        
+        if makeList("SHMS_PS").any() != 0:
+            yieldRel_SHMS_scaler = yield_dict["yield_SHMS_scaler"]/yield_dict["min_yield_SHMS_scaler"]
+            yieldRel_SHMS_notrack = yield_dict["yield_SHMS_notrack"]/yield_dict["min_yield_SHMS_notrack"]
+            yieldRel_SHMS_track = yield_dict["yield_SHMS_track"]/yield_dict["min_yield_SHMS_track"]
+            yield_dict.update({"yieldRel_SHMS_scaler" : yieldRel_SHMS_scaler})
+            yield_dict.update({"yieldRel_SHMS_notrack" : yieldRel_SHMS_notrack})
+            yield_dict.update({"yieldRel_SHMS_track" : yieldRel_SHMS_track})
 
-        yieldRel_SHMS_CPULT_notrack = yield_dict["yield_SHMS_CPULT_notrack"]/yield_dict["min_yield_SHMS_CPULT_notrack"]
-        yieldRel_SHMS_CPULT_track = yield_dict["yield_SHMS_CPULT_track"]/yield_dict["min_yield_SHMS_CPULT_track"]
-        yield_dict.update({"yieldRel_SHMS_CPULT_notrack" : yieldRel_SHMS_CPULT_notrack})
-        yield_dict.update({"yieldRel_SHMS_CPULT_track" : yieldRel_SHMS_CPULT_track})
+            yieldRel_SHMS_CPULT_notrack = yield_dict["yield_SHMS_CPULT_notrack"]/yield_dict["min_yield_SHMS_CPULT_notrack"]
+            yieldRel_SHMS_CPULT_track = yield_dict["yield_SHMS_CPULT_track"]/yield_dict["min_yield_SHMS_CPULT_track"]
+            yield_dict.update({"yieldRel_SHMS_CPULT_notrack" : yieldRel_SHMS_CPULT_notrack})
+            yield_dict.update({"yieldRel_SHMS_CPULT_track" : yieldRel_SHMS_CPULT_track})
+            
+            
+            uncern_yieldRel_SHMS_scaler = np.sqrt((yield_dict["uncern_SHMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2)
+            uncern_yieldRel_SHMS_notrack = np.sqrt((yield_dict["uncern_SHMS_evts_notrack"]**2)+(yield_dict["uncern_TLT"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2)
+            uncern_yieldRel_SHMS_track =  np.sqrt((yield_dict["uncern_SHMS_evts_notrack"]**2)+(yield_dict["uncern_TLT"]**2)+(makeList("SHMS_track_uncern")**2)+((yield_dict["uncern_charge"]/makeList("charge"))**2))
+            yield_dict.update({"uncern_yieldRel_SHMS_scaler" : uncern_yieldRel_SHMS_scaler})
+            yield_dict.update({"uncern_yieldRel_SHMS_notrack" : uncern_yieldRel_SHMS_notrack})
+            yield_dict.update({"uncern_yieldRel_SHMS_track" : uncern_yieldRel_SHMS_track})
+            
+            uncern_yieldRel_SHMS_CPULT_notrack = (yield_dict["uncern_SHMS_evts_notrack"]+yield_dict["uncern_CPULT_phys"]+yield_dict["uncern_charge"]/makeList("charge"))
+            uncern_yieldRel_SHMS_CPULT_track =  (yield_dict["uncern_SHMS_evts_notrack"]+yield_dict["uncern_CPULT_phys"]+makeList("SHMS_track_uncern")+yield_dict["uncern_charge"]/makeList("charge"))
+            yield_dict.update({"uncern_yieldRel_SHMS_CPULT_notrack" : uncern_yieldRel_SHMS_CPULT_notrack})
+            yield_dict.update({"uncern_yieldRel_SHMS_CPULT_track" : uncern_yieldRel_SHMS_CPULT_track})
+            
+        else: 
+            yield_dict.update({"yieldRel_SHMS_scaler" :0})
+            yield_dict.update({"yieldRel_SHMS_notrack" : 0})
+            yield_dict.update({"yieldRel_SHMS_track" : 0})
+            yield_dict.update({"yieldRel_SHMS_CPULT_notrack" : 0})
+            yield_dict.update({"yieldRel_SHMS_CPULT_track" : 0})
+            
+            yield_dict.update({"uncern_yieldRel_SHMS_scaler" : 0})
+            yield_dict.update({"uncern_yieldRel_SHMS_notrack" : 0})
+            yield_dict.update({"uncern_yieldRel_SHMS_track" : 0})
+            
+            yield_dict.update({"uncern_yieldRel_SHMS_CPULT_notrack" : 0})
+            yield_dict.update({"uncern_yieldRel_SHMS_CPULT_track" : 0})
+            
 
        
-        yieldRel_HMS_scaler = yield_dict["yield_HMS_scaler"]/yield_dict["min_yield_HMS_scaler"]
-        yieldRel_HMS_notrack = yield_dict["yield_HMS_notrack"]/yield_dict["min_yield_HMS_notrack"]
-        yieldRel_HMS_track = yield_dict["yield_HMS_track"]/yield_dict["min_yield_HMS_track"]
-        yield_dict.update({"yieldRel_HMS_scaler" : yieldRel_HMS_scaler})
-        yield_dict.update({"yieldRel_HMS_notrack" : yieldRel_HMS_notrack})
-        yield_dict.update({"yieldRel_HMS_track" : yieldRel_HMS_track})
+       
+        if makeList("HMS_PS").any() != 0:
+            yieldRel_HMS_scaler = yield_dict["yield_HMS_scaler"]/yield_dict["min_yield_HMS_scaler"]
+            yieldRel_HMS_notrack = yield_dict["yield_HMS_notrack"]/yield_dict["min_yield_HMS_notrack"]
+            yieldRel_HMS_track = yield_dict["yield_HMS_track"]/yield_dict["min_yield_HMS_track"]
+            yield_dict.update({"yieldRel_HMS_scaler" : yieldRel_HMS_scaler})
+            yield_dict.update({"yieldRel_HMS_notrack" : yieldRel_HMS_notrack})
+            yield_dict.update({"yieldRel_HMS_track" : yieldRel_HMS_track})
 
-        yieldRel_HMS_CPULT_notrack = yield_dict["yield_HMS_CPULT_notrack"]/yield_dict["min_yield_HMS_CPULT_notrack"]
-        yieldRel_HMS_CPULT_track = yield_dict["yield_HMS_CPULT_track"]/yield_dict["min_yield_HMS_CPULT_track"]
-        yield_dict.update({"yieldRel_HMS_CPULT_notrack" : yieldRel_HMS_CPULT_notrack})
-        yield_dict.update({"yieldRel_HMS_CPULT_track" : yieldRel_HMS_CPULT_track})
-
+            yieldRel_HMS_CPULT_notrack = yield_dict["yield_HMS_CPULT_notrack"]/yield_dict["min_yield_HMS_CPULT_notrack"]
+            yieldRel_HMS_CPULT_track = yield_dict["yield_HMS_CPULT_track"]/yield_dict["min_yield_HMS_CPULT_track"]
+            yield_dict.update({"yieldRel_HMS_CPULT_notrack" : yieldRel_HMS_CPULT_notrack})
+            yield_dict.update({"yieldRel_HMS_CPULT_track" : yieldRel_HMS_CPULT_track})
+            
+            
+            uncern_yieldRel_HMS_scaler = np.sqrt((yield_dict["uncern_HMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2)
+            uncern_yieldRel_HMS_notrack = np.sqrt((yield_dict["uncern_HMS_evts_notrack"]**2)+(yield_dict["uncern_TLT"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2)
+            uncern_yieldRel_HMS_track =  np.sqrt((yield_dict["uncern_HMS_evts_notrack"]**2)+(yield_dict["uncern_TLT"]**2)+(makeList("HMS_track_uncern")**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2)
+            yield_dict.update({"uncern_yieldRel_HMS_scaler" : uncern_yieldRel_HMS_scaler})
+            yield_dict.update({"uncern_yieldRel_HMS_notrack" : uncern_yieldRel_HMS_notrack})
+            yield_dict.update({"uncern_yieldRel_HMS_track" : uncern_yieldRel_HMS_track})
+            
+            uncern_yieldRel_HMS_CPULT_notrack = (yield_dict["uncern_HMS_evts_notrack"]+yield_dict["uncern_CPULT_phys"])
+            uncern_yieldRel_HMS_CPULT_track =  (yield_dict["uncern_HMS_evts_notrack"]+yield_dict["uncern_CPULT_phys"]+makeList("HMS_track_uncern"))
+            yield_dict.update({"uncern_yieldRel_HMS_CPULT_notrack" : uncern_yieldRel_HMS_CPULT_notrack})
+            yield_dict.update({"uncern_yieldRel_HMS_CPULT_track" : uncern_yieldRel_HMS_CPULT_track})
+        else:
+            yield_dict.update({"yieldRel_HMS_scaler" : 0})
+            yield_dict.update({"yieldRel_HMS_notrack" : 0})
+            yield_dict.update({"yieldRel_HMS_track" : 0})
+            yield_dict.update({"yieldRel_HMS_CPULT_notrack" : 0})
+            yield_dict.update({"yieldRel_HMS_CPULT_track" : 0})
+            
+            yield_dict.update({"uncern_yieldRel_HMS_scaler" : 0})
+            yield_dict.update({"uncern_yieldRel_HMS_notrack" : 0})
+            yield_dict.update({"uncern_yieldRel_HMS_track" : 0})
+            
+            yield_dict.update({"uncern_yieldRel_HMS_CPULT_notrack" : 0})
+            yield_dict.update({"uncern_yieldRel_HMS_CPULT_track" : 0})
+            
+            
+            
+            
     
     else:
     
@@ -802,7 +865,10 @@ def plot_yield():
         
         y = int  + linear*x+ (quadratic/6400)*(x**(2))
         return y
-        
+    
+    def expfunc(x, a, b, ):
+        y = b^(x-a)
+        return y
     
         
     
@@ -987,13 +1053,16 @@ def plot_yield():
             yfit3 = (slope_HMS_trVScurrent3)*yield_data["current"] + inter_HMS_trVScurrent3
             yfit4 =  inter_HMS_trVScurrent4 + ((linear_HMS_trVScurrent4)*(yield_data["current"])) + ((quadratic_HMS_trVScurrent4)*(yield_data["current"]**(2)))
         
+        
+        
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent, d_slope_HMS_trVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_trVScurrent, d_inter_HMS_trVScurrent) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red))
             plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent2, d_slope_HMS_trVScurrent2) + "\n fixed intercept = %f" %(1.000000) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red2))
-            plt.plot(yield_data["current"], yfit4, color = 'blue', label = "quadratic term = %f +/- %f" %(quadratic_HMS_trVScurrent4, d_quadratic_HMS_trVScurrent4)+ "\n linear term = %f +/- %f" %(linear_HMS_trVScurrent4, d_linear_HMS_trVScurrent4) +"\n intercept = %f +/- %f" %(inter_HMS_trVScurrent4, d_inter_HMS_trVScurrent4) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red4))
             if "C" in inp_name:
                 plt.plot(yield_data["current"], yfit3, color = 'purple', label = "fixed slope = 0"  + "\n intercept = %f +/- %f" %(inter_HMS_trVScurrent3, d_inter_HMS_trVScurrent3) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red3))
+            if "LH2" in inp_name:
+                plt.plot(yield_data["current"], yfit4, color = 'blue', label = "quadratic term = %f +/- %f" %(quadratic_HMS_trVScurrent4, d_quadratic_HMS_trVScurrent4)+ "\n linear term = %f +/- %f" %(linear_HMS_trVScurrent4, d_linear_HMS_trVScurrent4) +"\n intercept = %f +/- %f" %(inter_HMS_trVScurrent4, d_inter_HMS_trVScurrent4) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red4))
+                #plt.plot(yield_data["current"], yfit5, color = 'blue', label = "quadratic term = %f +/- %f" %(quadratic_HMS_trVScurrent4, d_quadratic_HMS_trVScurrent4)+ "\n linear term = %f +/- %f" %(linear_HMS_trVScurrent4, d_linear_HMS_trVScurrent4) +"\n intercept = %f +/- %f" %(inter_HMS_trVScurrent4, d_inter_HMS_trVScurrent4) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red4))
 
-        
         plt.ylabel('Rel. Yield track', fontsize=16)
         plt.xlabel('Current [uA]', fontsize =16)
         plt.legend(prop={'size' :7})
