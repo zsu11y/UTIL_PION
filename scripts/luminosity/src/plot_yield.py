@@ -21,7 +21,7 @@ if os.environ.get('DISPLAY', '')=='':   # Added to "fix" the "no display name an
 
 import matplotlib.pyplot as plt # type: ignore
 from scipy.optimize import curve_fit # type: ignore
-import statsmodels.api as sm # type: ignore
+#import statsmodels.api as sm # type: ignore
 from csv import DictReader
 
 
@@ -151,13 +151,13 @@ def calc_yield():
 
         "uncern_COIN_evts_scaler" : np.sqrt(makeList("COINTRIG_scaler"))/makeList("COINTRIG_scaler"),
 
-        "uncern_HMS_evts_notrack" : np.sqrt(makeList("h_int_etotnorm_evts"))/makeList("h_int_etotnorm_evts"),
+        "uncern_HMS_evts_notrack" : np.sqrt(abs(makeList("h_int_etotnorm_evts")))/makeList("h_int_etotnorm_evts"),
 
-        "uncern_SHMS_evts_notrack" : np.sqrt(makeList("p_int_etotnorm_evts"))/makeList("p_int_etotnorm_evts"),
+        "uncern_SHMS_evts_notrack" : np.sqrt(abs(makeList("p_int_etotnorm_evts")))/makeList("p_int_etotnorm_evts"),
 
-        "uncern_HMS_evts_track" : np.sqrt(makeList("h_int_etottracknorm_evts"))/makeList("h_int_etottracknorm_evts"),
+        "uncern_HMS_evts_track" : np.sqrt(abs(makeList("h_int_etottracknorm_evts")))/makeList("h_int_etottracknorm_evts"),
 
-        "uncern_SHMS_evts_track" : np.sqrt(makeList("p_int_etottracknorm_evts"))/makeList("p_int_etottracknorm_evts"),
+        "uncern_SHMS_evts_track" : np.sqrt(abs(makeList("p_int_etottracknorm_evts")))/makeList("p_int_etottracknorm_evts"),
     }            
     
     #2022 data 
@@ -192,8 +192,8 @@ def calc_yield():
     yield_dict.update({"sent_edtm_SHMS" : makeList("sent_edtm")/makeList("SHMS_PS")})
 
     yield_dict.update({"uncern_SHMS_evts_scaler" : np.sqrt(makeList("SHMSTRIG_scaler"))/makeList("SHMSTRIG_scaler")})
-    yield_dict.update({"uncern_SHMS_evts_notrack" : np.sqrt(makeList("p_int_etotnorm_evts"))/makeList("p_int_etotnorm_evts")})
-    yield_dict.update({"uncern_SHMS_evts_track" : np.sqrt(makeList("p_int_etottracknorm_evts"))/makeList("p_int_etottracknorm_evts")})
+    yield_dict.update({"uncern_SHMS_evts_notrack" : np.sqrt(abs(makeList("p_int_etotnorm_evts")))/makeList("p_int_etotnorm_evts")})
+    yield_dict.update({"uncern_SHMS_evts_track" : np.sqrt(abs(makeList("p_int_etottracknorm_evts")))/makeList("p_int_etottracknorm_evts")})
 
     pTLT = makeList("paccp_edtm")/yield_dict["sent_edtm_SHMS"]
     yield_dict.update({"pTLT" : pTLT})        
@@ -234,8 +234,8 @@ def calc_yield():
     yield_dict.update({"sent_edtm_HMS" : makeList("sent_edtm")/makeList("HMS_PS")})
 
     yield_dict.update({"uncern_HMS_evts_scaler" : np.sqrt(makeList("HMSTRIG_scaler"))/makeList("HMSTRIG_scaler")})
-    yield_dict.update({"uncern_HMS_evts_notrack" : np.sqrt(makeList("h_int_etotnorm_evts"))/makeList("h_int_etotnorm_evts")})
-    yield_dict.update({"uncern_HMS_evts_track" : np.sqrt(makeList("h_int_etottracknorm_evts"))/makeList("h_int_etottracknorm_evts")})
+    yield_dict.update({"uncern_HMS_evts_notrack" : np.sqrt(abs(makeList("h_int_etotnorm_evts")))/makeList("h_int_etotnorm_evts")})
+    yield_dict.update({"uncern_HMS_evts_track" : np.sqrt(abs(makeList("h_int_etottracknorm_evts")))/makeList("h_int_etottracknorm_evts")})
 
     hTLT = makeList("haccp_edtm")/yield_dict["sent_edtm_HMS"]
     yield_dict.update({"hTLT" : hTLT})
@@ -290,9 +290,12 @@ def calc_yield():
     tweight_hms_cpu_tr = 0
     tweight_hms_cpu_ntr = 0
     
+    
+    
+    
     uncern_yield_HMS_scaler = np.sqrt((yield_dict["yield_HMS_scaler"]**2)*((yield_dict["uncern_HMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
-    uncern_yield_HMS_track = np.sqrt((yield_dict["yield_HMS_track"]**2)*((yield_dict["uncern_HMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
-    uncern_yield_HMS_notrack = np.sqrt((yield_dict["yield_HMS_notrack"]**2)*((yield_dict["uncern_HMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
+    uncern_yield_HMS_track = np.sqrt(abs(yield_dict["yield_HMS_track"]**2)*((yield_dict["uncern_HMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
+    uncern_yield_HMS_notrack = np.sqrt(abs(yield_dict["yield_HMS_notrack"]**2)*((yield_dict["uncern_HMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
     uncern_yield_HMS_CPULT_track = np.sqrt((yield_dict["yield_HMS_CPULT_track"]**2)*((yield_dict["uncern_HMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
     uncern_yield_HMS_CPULT_notrack = np.sqrt((yield_dict["yield_HMS_CPULT_notrack"]**2)*((yield_dict["uncern_HMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
     
@@ -333,8 +336,8 @@ def calc_yield():
     tweight_shms_cpu_ntr = 0
     
     uncern_yield_SHMS_scaler = np.sqrt((yield_dict["yield_SHMS_scaler"]**2)*((yield_dict["uncern_SHMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
-    uncern_yield_SHMS_track = np.sqrt((yield_dict["yield_SHMS_track"]**2)*((yield_dict["uncern_SHMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
-    uncern_yield_SHMS_notrack = np.sqrt((yield_dict["yield_SHMS_notrack"]**2)*((yield_dict["uncern_SHMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
+    uncern_yield_SHMS_track = np.sqrt(abs(yield_dict["yield_SHMS_track"]**2)*((yield_dict["uncern_SHMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
+    uncern_yield_SHMS_notrack = np.sqrt(abs(yield_dict["yield_SHMS_notrack"]**2)*((yield_dict["uncern_SHMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
     uncern_yield_SHMS_CPULT_track = np.sqrt((yield_dict["yield_SHMS_CPULT_track"]**2)*((yield_dict["uncern_SHMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
     uncern_yield_SHMS_CPULT_notrack = np.sqrt((yield_dict["yield_SHMS_CPULT_notrack"]**2)*((yield_dict["uncern_SHMS_evts_scaler"]**2)+(yield_dict["uncern_CPULT_phys"]**2)+(yield_dict["uncern_charge"]/makeList("charge"))**2))
     
@@ -665,7 +668,7 @@ def plot_yield():
         return m/b
     '''
 
-    def linear_plot(x, y, xerr=None, yerr=None, xvalmax=100):
+    '''def linear_plot(x, y, xerr=None, yerr=None, xvalmax=100):
         # Remove NaN values from list
         c_arr = [[nx,ny] for nx,ny in zip(x,y) if str(ny) != 'nan']
         x_c = np.array([i[0] for i in c_arr])
@@ -686,7 +689,7 @@ def plot_yield():
         y_fit = results.predict(sm.add_constant(x_fit))
         plt.plot(x_fit, y_fit, color='green', label='{0}={1:0.2e}*{2}+1.00\n{3}={4:0.2e}\n{5}={6:0.2e}'.format(r'Y/$Y_0$',m/b,r'$I_b$',r'$\chi^2$',chisq,r'$m_0$',(m/b)), zorder=5)
 
-        return m/b    
+        return m/b  '''  
 
     def linfunc(x, int, slope):
         y = int + slope*x

@@ -29,7 +29,7 @@ PLOTINFO=$1
 
 cd "${SCRIPTPATH}/luminosity/src/"
 
-python3 reana_lumi.py
+#python3 reana_lumi.py
 
 
 echo "Plotting yield data for ${PLOTINFO}..."
