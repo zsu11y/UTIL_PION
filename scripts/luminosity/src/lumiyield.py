@@ -52,6 +52,8 @@ ANATYPE=lt.ANATYPE
 Grab prescale values and tracking efficiencies from report file
 '''
 
+
+
 # Open report file to grab prescale values and tracking efficiency
 report = UTILPATH+"/REPORT_OUTPUT/Analysis/Lumi/%s_%s_%s.report" % (ROOTPrefix,runNum,MaxEvent) 
 f = open(report)
@@ -119,7 +121,7 @@ HMS_track_eff = float(HMS_track_info[0]) # Also define below, I'll probably use 
 HMS_track_uncern = float(HMS_track_info[1])
 
 # Convert the prescale input values to their actual DAQ values
-for i,index in enumerate(psActual):
+for i,index in enumerate(psActual): # changed from enumerate in psActual to psValue and it seems to spit out the actual DAQ PS values
     #psValue
     if (index == ps1) :
         if(index == -1):
@@ -150,7 +152,41 @@ for i,index in enumerate(psActual):
         if(index == -1):
             PS6 = 0
         else:
-            PS6 = psActual[i]            
+            PS6 = psActual[i]    
+            
+            
+for i,index in enumerate(psValue): # changed from enumerate in psActual to psValue and it seems to spit out the actual DAQ PS values
+    #psValue
+    if (index == ps1) :
+        if(index == -1):
+            PS1 = 0
+        else:
+            PS1 = psActual[i]
+    if (index == ps2) :
+        if(index == -1):
+            PS2 = 0
+        else:
+            PS2 = psActual[i]            
+    if (index == ps3) :
+        if(index == -1):
+            PS3 = 0
+        else:
+            PS3 = psActual[i]
+    if (index == ps4) :
+        if(index == -1):
+            PS4 = 0
+        else:
+            PS4 = psActual[i]            
+    if (index == ps5) :
+        if(index == -1):
+            PS5 = 0
+        else:
+            PS5 = psActual[i]
+    if (index == ps6) :
+        if(index == -1):
+            PS6 = 0
+        else:
+            PS6 = psActual[i]         
 f.close()
 
 ################################################################################################################################################

@@ -355,6 +355,7 @@ def scaler(PS_names, HMS_PS, SHMS_PS, COIN_PS, thres_curr, report_current, runNu
 
     if COIN_PS == None:
         if SHMS_PS == None:
+            print(EDTM_sum, HMS_PS)
             scalers.update({"sent_edtm_PS" : EDTM_sum/HMS_PS})
         elif HMS_PS == None:
             scalers.update({"sent_edtm_PS" : EDTM_sum/SHMS_PS})

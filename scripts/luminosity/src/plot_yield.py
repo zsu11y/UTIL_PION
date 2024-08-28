@@ -160,7 +160,7 @@ def calc_yield():
         "uncern_SHMS_evts_track" : np.sqrt(abs(makeList("p_int_etottracknorm_evts")))/makeList("p_int_etottracknorm_evts"),
     }            
     
-    #2022 data 
+    #2022 data or 2021 data
     if "2022" in inp_name:
         slope = 5542.0
         uncern_slope = 11.5
@@ -180,15 +180,46 @@ def calc_yield():
         
 
 
-    
+    gwidth = 55*(10**(-9)) #gate width == 55 nanometers
     
         
     # Total livetime calculation
-    TLT = makeList("accp_edtm")/makeList("sent_edtm_PS")
-    yield_dict.update({"TLT" : TLT})
+    TLT_EDTM = makeList("accp_edtm")/makeList("sent_edtm_PS") #TLT with edtm 
+    
+    if makeList("HMS_PS").any() != 0:
+        yield_dict.update({"rate_HMS": makeList("HMSTRIG_scaler")/makeList("time")})
+    else:  yield_dict.update({"rate_HMS": 0})
+        
+    if makeList("SHMS_PS").any() != 0:
+        yield_dict.update({"rate_SHMS": makeList("SHMSTRIG_scaler")/makeList("time")})  
+    else: yield_dict.update({"rate_SHMS": 0})
+    
+    EDT2 = gwidth*(yield_dict["rate_HMS"] + yield_dict["rate_SHMS"]) # estimation of dead time using gate width and trigger rate
+    
+    
+    ELT2 = 1 - EDT2 
+    
+    TLT_ELT = ELT2*yield_dict["CPULT_phys"]
+    
+  
+ 
+    yield_dict.update({"TLT" : TLT_EDTM})
+    yield_dict.update({"TLT_ELT" : TLT_ELT})
+    
+    
+ 
+    
+    #yield_dict.update({"TLT" : TLT})
+    
     uncern_TLT = np.sqrt(makeList("accp_edtm")/makeList("sent_edtm_PS")**2+makeList("accp_edtm")**2/makeList("sent_edtm_PS")**4)
+   
+    uncern_TLT_ELT = TLT_ELT*np.sqrt((makeList("CPULT_scaler_uncern")/makeList("CPULT_scaler"))**2 + (ELT2*(1-ELT2))/(50*TLT_ELT**2))
+    
+    #uncern_TLT_ELT = np.sqrt((ELT2*(1-ELT2))/100)
+    
     #uncern_TLT = np.sqrt(makeList("sent_edtm_PS")*.95*.05)
     yield_dict.update({"uncern_TLT" : uncern_TLT})
+    yield_dict.update({"uncern_TLT_ELT" : uncern_TLT_ELT })
         
     yield_dict.update({"rate_SHMS" : makeList("SHMSTRIG_scaler")/makeList("time")})
     
@@ -222,18 +253,30 @@ def calc_yield():
             yield_SHMS_track.append(1)
             yield_SHMS_CPULT_notrack.append(1)
             yield_SHMS_CPULT_track.append(1)
-    else:        
-        yield_SHMS_scaler = (yield_dict["SHMS_scaler_accp"])/(makeList("charge")*makeList("curr_corr"))
-        yield_SHMS_notrack = (makeList("p_int_etotnorm_evts")*makeList("SHMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["TLT"])
-        yield_SHMS_track = (makeList("p_int_etottracknorm_evts")*makeList("SHMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["TLT"]*makeList("SHMS_track"))
-        yield_SHMS_CPULT_notrack = (makeList("p_int_etotnorm_evts")*makeList("SHMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["CPULT_phys"])
-        yield_SHMS_CPULT_track = (makeList("p_int_etottracknorm_evts")*makeList("SHMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["CPULT_phys"]*makeList("SHMS_track"))
-    
+    else:             
+            yield_SHMS_scaler = (yield_dict["SHMS_scaler_accp"])/(makeList("charge")*makeList("curr_corr"))
+            yield_SHMS_notrack = (makeList("p_int_etotnorm_evts")*makeList("SHMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["TLT"])
+            yield_SHMS_track = (makeList("p_int_etottracknorm_evts")*makeList("SHMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["TLT"]*makeList("SHMS_track"))
+            yield_SHMS_CPULT_notrack = (makeList("p_int_etotnorm_evts")*makeList("SHMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["CPULT_phys"])
+            yield_SHMS_CPULT_track = (makeList("p_int_etottracknorm_evts")*makeList("SHMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["CPULT_phys"]*makeList("SHMS_track"))
+            
+            
     yield_dict.update({"yield_SHMS_scaler" : yield_SHMS_scaler})
     yield_dict.update({"yield_SHMS_notrack" : yield_SHMS_notrack})
     yield_dict.update({"yield_SHMS_track" : yield_SHMS_track})
     yield_dict.update({"yield_SHMS_CPULT_notrack" : yield_SHMS_CPULT_notrack})
     yield_dict.update({"yield_SHMS_CPULT_track" : yield_SHMS_CPULT_track})
+
+    for i,curr in enumerate(yield_dict["current"]):
+        if abs((TLT_EDTM)[i] - (TLT_ELT)[i]) > ((abs(uncern_TLT_ELT)[i]) + abs((uncern_TLT)[i])) and TLT_ELT[i] > TLT_EDTM[i]:
+            
+            yield_dict["yield_SHMS_notrack"][i] = (makeList("p_int_etotnorm_evts")[i]*makeList("SHMS_PS")[i])/(makeList("charge")[i]*makeList("curr_corr")[i]*yield_dict["TLT_ELT"][i])
+            yield_dict["yield_SHMS_track"][i] = (makeList("p_int_etottracknorm_evts")[i]*makeList("SHMS_PS")[i])/(makeList("charge")[i]*makeList("curr_corr")[i]*yield_dict["TLT_ELT"][i]*makeList("SHMS_track")[i])
+        else: pass  
+
+
+
+
 
     yield_dict.update({"rate_HMS" : makeList("HMSTRIG_scaler")/makeList("time")})
     
@@ -270,12 +313,14 @@ def calc_yield():
             yield_HMS_CPULT_notrack.append(1)
             yield_HMS_CPULT_track.append(1)
     else:
-        yield_HMS_scaler = (yield_dict["HMS_scaler_accp"])/(makeList("charge")*makeList("curr_corr"))
-        yield_HMS_notrack = (makeList("h_int_etotnorm_evts")*makeList("HMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["TLT"])
-        yield_HMS_track = (makeList("h_int_etottracknorm_evts")*makeList("HMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["TLT"]*makeList("HMS_track"))
-        yield_HMS_CPULT_notrack = (makeList("h_int_etotnorm_evts")*makeList("HMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["CPULT_phys"])
-        yield_HMS_CPULT_track = (makeList("h_int_etottracknorm_evts")*makeList("HMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["CPULT_phys"]*makeList("HMS_track"))
-    
+
+            yield_HMS_scaler = (yield_dict["HMS_scaler_accp"])/(makeList("charge")*makeList("curr_corr"))
+            yield_HMS_notrack = (makeList("h_int_etotnorm_evts")*makeList("HMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["TLT"])
+            yield_HMS_track = (makeList("h_int_etottracknorm_evts")*makeList("HMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["TLT"]*makeList("HMS_track"))
+            yield_HMS_CPULT_notrack = (makeList("h_int_etotnorm_evts")*makeList("HMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["CPULT_phys"])
+            yield_HMS_CPULT_track = (makeList("h_int_etottracknorm_evts")*makeList("HMS_PS"))/(makeList("charge")*makeList("curr_corr")*yield_dict["CPULT_phys"]*makeList("HMS_track"))
+
+        
         
     yield_dict.update({"yield_HMS_scaler" : yield_HMS_scaler})
     yield_dict.update({"yield_HMS_notrack" : yield_HMS_notrack})
@@ -283,7 +328,13 @@ def calc_yield():
     yield_dict.update({"yield_HMS_CPULT_notrack" : yield_HMS_CPULT_notrack})
     yield_dict.update({"yield_HMS_CPULT_track" : yield_HMS_CPULT_track})
 
-
+    for i,curr in enumerate(yield_dict["current"]):
+        if abs((TLT_EDTM)[i] - (TLT_ELT)[i]) > ((abs(uncern_TLT_ELT)[i]) + abs((uncern_TLT)[i])) and TLT_ELT[i] > TLT_EDTM[i] :
+            
+            yield_dict["yield_HMS_notrack"][i] = (makeList("h_int_etotnorm_evts")[i]*makeList("HMS_PS")[i])/(makeList("charge")[i]*makeList("curr_corr")[i]*yield_dict["TLT_ELT"][i])
+            yield_dict["yield_HMS_track"][i] = (makeList("h_int_etottracknorm_evts")[i]*makeList("HMS_PS")[i])/(makeList("charge")[i]*makeList("curr_corr")[i]*yield_dict["TLT_ELT"][i]*makeList("HMS_track")[i])
+        else: pass 
+    
     
     # define relative yield to the error weighted average of the absolute yield as opposed to the minimum current
     
@@ -861,14 +912,14 @@ def plot_yield():
         y = slope
         return y
     
-    def quadfunc(x,int,linear , quadratic):
+    def quadfunc(x,int,linear,quadratic):
         
-        y = int  + linear*x+ (quadratic/6400)*(x**(2))
+        y = int  + (linear)*(x)+ (quadratic/6400)*((x)**(2))
         return y
     
-    def expfunc(x, a, b, ):
-        y = b^(x-a)
-        return y
+   # def expfunc(x, b, a):
+    #    y = b^(a*x)
+      #  return y
     
         
     
@@ -1013,13 +1064,19 @@ def plot_yield():
             slope_HMS_trVScurrent3 = 0
             d_slope_HMS_trVScurrent3 = 0 #now do for all track plots in HMS and SHMS
             
-            a_fit_HMS_trVScurrent4, cov_HMS_trVScurrent4 = curve_fit(quadfunc,yield_data["current"], yield_data["yieldRel_HMS_track"], p0=[1,0,0] ,sigma=yield_data["uncern_yieldRel_HMS_track"], absolute_sigma = True)
-            inter_HMS_trVScurrent4 = a_fit_HMS_trVScurrent4[0] 
-            linear_HMS_trVScurrent4 = a_fit_HMS_trVScurrent4[1]
-            quadratic_HMS_trVScurrent4 = a_fit_HMS_trVScurrent4[2]
-            d_inter_HMS_trVScurrent4 = np.sqrt(cov_HMS_trVScurrent4[0][0])
-            d_linear_HMS_trVScurrent4 = np.sqrt(cov_HMS_trVScurrent4[1][1])
-            d_quadratic_HMS_trVScurrent4 = np.sqrt(cov_HMS_trVScurrent4[2][2])
+            #a_fit_HMS_trVScurrent4, cov_HMS_trVScurrent4 = curve_fit(quadfunc,yield_data["current"], yield_data["yieldRel_HMS_track"] ,bounds = ((1,-0.1,-0.000001),(1.01,0.1,0)),sigma=yield_data["uncern_yieldRel_HMS_track"], absolute_sigma = True)
+           # linear_HMS_trVScurrent4 = a_fit_HMS_trVScurrent4[1]
+           # quadratic_HMS_trVScurrent4 = a_fit_HMS_trVScurrent4[2]
+          #  d_inter_HMS_trVScurrent4 = np.sqrt(cov_HMS_trVScurrent4[0][0])
+          #  d_linear_HMS_trVScurrent4 = np.sqrt(cov_HMS_trVScurrent4[1][1])
+           # d_quadratic_HMS_trVScurrent4 = np.sqrt(cov_HMS_trVScurrent4[2][2])
+            
+           # a_fit_HMS_trVScurrent5, cov_HMS_trVScurrent5 = curve_fit(expfunc,yield_data["current"], yield_data["yieldRel_HMS_track"] ,sigma=yield_data["uncern_yieldRel_HMS_track"], absolute_sigma = True)
+         #   B_HMS_trVScurrent5 = a_fit_HMS_trVScurrent5[0] 
+          #  A_HMS_trVScurrent5 = a_fit_HMS_trVScurrent5[1]
+          #  d_B_HMS_trVScurrent5 = np.sqrt(cov_HMS_trVScurrent5[0][0])
+          #  d_A_HMS_trVScurrent5 = np.sqrt(cov_HMS_trVScurrent5[1][1])
+           
  
             
             chisqr_HMS_trVScurrent = sum((yield_data["yieldRel_HMS_track"]-linfunc(yield_data["current"],inter_HMS_trVScurrent,slope_HMS_trVScurrent))**2/yield_data["uncern_yieldRel_HMS_track"]**2)
@@ -1034,9 +1091,15 @@ def plot_yield():
             dof_HMS_trVScurrent3 = len(yield_data["yieldRel_HMS_track"]) - 2
             chisqr_HMS_trVScurrent_red3 = chisqr_HMS_trVScurrent3/dof_HMS_trVScurrent3
             
-            chisqr_HMS_trVScurrent4 = sum((yield_data["yieldRel_HMS_track"]-quadfunc(yield_data["current"],inter_HMS_trVScurrent4, linear_HMS_trVScurrent4, quadratic_HMS_trVScurrent4))**2/yield_data["uncern_yieldRel_HMS_track"]**2)
-            dof_HMS_trVScurrent4 = len(yield_data["yieldRel_HMS_track"]) - 2
-            chisqr_HMS_trVScurrent_red4 = chisqr_HMS_trVScurrent4/dof_HMS_trVScurrent4
+           # chisqr_HMS_trVScurrent4 = sum((yield_data["yieldRel_HMS_track"]-quadfunc(yield_data["current"],inter_HMS_trVScurrent4, linear_HMS_trVScurrent4, quadratic_HMS_trVScurrent4))**2/yield_data["uncern_yieldRel_HMS_track"]**2)
+          #  dof_HMS_trVScurrent4 = len(yield_data["yieldRel_HMS_track"]) - 2
+           # chisqr_HMS_trVScurrent_red4 = chisqr_HMS_trVScurrent4/dof_HMS_trVScurrent4
+            
+           # chisqr_HMS_trVScurrent5 = sum((yield_data["yieldRel_HMS_track"]-expfunc(yield_data["current"],B_HMS_trVScurrent5, A_HMS_trVScurrent5))**2/yield_data["uncern_yieldRel_HMS_track"]**2)
+           # dof_HMS_trVScurrent5 = len(yield_data["yieldRel_HMS_track"]) - 2
+           # chisqr_HMS_trVScurrent_red5 = chisqr_HMS_trVScurrent5/dof_HMS_trVScurrent5
+            
+            
             
         plt.errorbar(yield_data["current"],yield_data["yieldRel_HMS_track"],yerr=yield_data["yieldRel_HMS_track"]*yield_data["uncern_yieldRel_HMS_track"],color='black',linestyle='None',zorder=3,label="_nolegend_")
         plt.scatter(yield_data["current"],yield_data["yieldRel_HMS_track"],color='blue',zorder=4,label="_nolegend_")
@@ -1051,17 +1114,16 @@ def plot_yield():
             yfit = (slope_HMS_trVScurrent)*yield_data["current"] + inter_HMS_trVScurrent
             yfit2 = (slope_HMS_trVScurrent2)*yield_data["current"] + 1.0
             yfit3 = (slope_HMS_trVScurrent3)*yield_data["current"] + inter_HMS_trVScurrent3
-            yfit4 =  inter_HMS_trVScurrent4 + ((linear_HMS_trVScurrent4)*(yield_data["current"])) + ((quadratic_HMS_trVScurrent4)*(yield_data["current"]**(2)))
-        
-        
+           # yfit4 =  inter_HMS_trVScurrent4 + ((linear_HMS_trVScurrent4)*(yield_data["current"])) + ((quadratic_HMS_trVScurrent4)*((yield_data["current"])**(2)))
+           # yfit5 = B_HMS_trVScurrent5^( A_HMS_trVScurrent5*yield_data["current"])
         
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent, d_slope_HMS_trVScurrent) + "\n intercept = %f +/- %f" %(inter_HMS_trVScurrent, d_inter_HMS_trVScurrent) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red))
             plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_HMS_trVScurrent2, d_slope_HMS_trVScurrent2) + "\n fixed intercept = %f" %(1.000000) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red2))
             if "C" in inp_name:
                 plt.plot(yield_data["current"], yfit3, color = 'purple', label = "fixed slope = 0"  + "\n intercept = %f +/- %f" %(inter_HMS_trVScurrent3, d_inter_HMS_trVScurrent3) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red3))
-            if "LH2" in inp_name:
-                plt.plot(yield_data["current"], yfit4, color = 'blue', label = "quadratic term = %f +/- %f" %(quadratic_HMS_trVScurrent4, d_quadratic_HMS_trVScurrent4)+ "\n linear term = %f +/- %f" %(linear_HMS_trVScurrent4, d_linear_HMS_trVScurrent4) +"\n intercept = %f +/- %f" %(inter_HMS_trVScurrent4, d_inter_HMS_trVScurrent4) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red4))
-                #plt.plot(yield_data["current"], yfit5, color = 'blue', label = "quadratic term = %f +/- %f" %(quadratic_HMS_trVScurrent4, d_quadratic_HMS_trVScurrent4)+ "\n linear term = %f +/- %f" %(linear_HMS_trVScurrent4, d_linear_HMS_trVScurrent4) +"\n intercept = %f +/- %f" %(inter_HMS_trVScurrent4, d_inter_HMS_trVScurrent4) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red4))
+           # if "LH2" in inp_name:
+                # plt.plot(yield_data["current"], yfit4, color = 'blue', label = "quadratic term = %f +/- %f" %(quadratic_HMS_trVScurrent4, d_quadratic_HMS_trVScurrent4)+"\n linear term = %f +/- %f" %(linear_HMS_trVScurrent4, d_linear_HMS_trVScurrent4) +"\n intercept = %f +/- %f" %(inter_HMS_trVScurrent4, d_inter_HMS_trVScurrent4) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red4))
+              #  plt.plot(yield_data["current"], yfit5, color = 'black', label = "exponential term = %f +/- %f" %(B_HMS_trVScurrent5, d_B_HMS_trVScurrent5) +"\n offset = %f +/- %f" %(A_HMS_trVScurrent5, d_A_HMS_trVScurrent5) + "\n reduced chi^2 = %f" %(chisqr_HMS_trVScurrent_red5))
 
         plt.ylabel('Rel. Yield track', fontsize=16)
         plt.xlabel('Current [uA]', fontsize =16)
@@ -1214,7 +1276,7 @@ def plot_yield():
             slope_SHMS_trVScurrent3 = 0
             d_slope_SHMS_trVScurrent3 = 0 
             
-            a_fit_SHMS_trVScurrent4, cov_SHMS_trVScurrent4 = curve_fit(quadfunc,yield_data["current"], yield_data["yieldRel_SHMS_track"], sigma=yield_data["uncern_yieldRel_SHMS_track"], absolute_sigma = True)
+            a_fit_SHMS_trVScurrent4, cov_SHMS_trVScurrent4 = curve_fit(quadfunc,yield_data["current"], yield_data["yieldRel_SHMS_track"], sigma=yield_data["uncern_yieldRel_SHMS_track"], absolute_sigma = True, bounds = ((1,-0.1,-0.000001),(1.01,0.1,0)))
             inter_SHMS_trVScurrent4 = a_fit_SHMS_trVScurrent4[0] 
             linear_SHMS_trVScurrent4 = a_fit_SHMS_trVScurrent4[1]
             quadratic_SHMS_trVScurrent4 = a_fit_SHMS_trVScurrent4[2]
@@ -1250,14 +1312,14 @@ def plot_yield():
             yfit = (slope_SHMS_trVScurrent)*yield_data["current"] + inter_SHMS_trVScurrent
             yfit2 = (slope_SHMS_trVScurrent2)*yield_data["current"] + 1.0
             yfit3 = (slope_SHMS_trVScurrent3)*yield_data["current"] + inter_SHMS_trVScurrent3
-            yfit4 =  inter_SHMS_trVScurrent4 + ((linear_SHMS_trVScurrent4)*(yield_data["current"])) + ((quadratic_SHMS_trVScurrent4)*(yield_data["current"]**(1/2)))
+            yfit4 =  inter_SHMS_trVScurrent4 + ((linear_SHMS_trVScurrent4)*(yield_data["current"])) + ((quadratic_SHMS_trVScurrent4)*((yield_data["current"])**(2)))
 
             plt.plot(yield_data["current"], yfit, color = 'green', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent, d_slope_SHMS_trVScurrent) + "\n intercept = %f +/- %f" %(inter_SHMS_trVScurrent, d_inter_SHMS_trVScurrent) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red))
-            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent2, d_slope_SHMS_trVScurrent2) + "\n fixed intercept = %f" %(1.000000) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red2))
-            plt.plot(yield_data["current"], yfit4, color = 'blue', label = "quadratic term = %f +/- %f" %(quadratic_SHMS_trVScurrent4, d_quadratic_SHMS_trVScurrent4)+ "\n linear term = %f +/- %f" %(linear_SHMS_trVScurrent4, d_linear_SHMS_trVScurrent4) +"\n intercept = %f +/- %f" %(inter_SHMS_trVScurrent4, d_inter_SHMS_trVScurrent4) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red4))
-            
+            plt.plot(yield_data["current"], yfit2, color = 'orange', label = "slope = %f +/- %f" %(slope_SHMS_trVScurrent2, d_slope_SHMS_trVScurrent2) + "\n fixed intercept = %f" %(1.000000) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red2))            
             if "C" in inp_name:
                 plt.plot(yield_data["current"], yfit3, color = 'purple', label = "fixed slope = 0"  + "\n intercept = %f +/- %f" %(inter_SHMS_trVScurrent3, d_inter_SHMS_trVScurrent3) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red3))
+           # if "LH2" in inp_name:
+            #    plt.plot(yield_data["current"], yfit4, color = 'blue', label = "quadratic term = %f +/- %f" %(quadratic_SHMS_trVScurrent4, d_quadratic_SHMS_trVScurrent4)+ "\n linear term = %f +/- %f" %(linear_SHMS_trVScurrent4, d_linear_SHMS_trVScurrent4) +"\n intercept = %f +/- %f" %(inter_SHMS_trVScurrent4, d_inter_SHMS_trVScurrent4) + "\n reduced chi^2 = %f" %(chisqr_SHMS_trVScurrent_red4))
 
         
        
@@ -1712,7 +1774,11 @@ def plot_yield():
     if "SHMS" in inp_name.upper():
         plt.xlabel('SHMS ElReal (PS2) Rate (kHz)', fontsize =12)
         plt.errorbar(yield_data["rate_SHMS"]/1000,yield_data["TLT"],yerr=yield_data["TLT"]*yield_data["uncern_TLT"],color='black',linestyle='None',zorder=3,label="_nolegend_")
-        plt.scatter(yield_data["rate_SHMS"]/1000,yield_data["TLT"],color='blue',zorder=4,label="_nolegend_")
+        plt.scatter(yield_data["rate_SHMS"]/1000,yield_data["TLT"],color='red',zorder=4,label="_nolegend_") #TLT using EDTM
+        
+        plt.errorbar(yield_data["rate_SHMS"]/1000,yield_data["TLT_ELT"],yerr=yield_data["TLT"]*yield_data["uncern_TLT_ELT"],color='black',linestyle='None',zorder=3,label="_nolegend_")
+        plt.scatter(yield_data["rate_SHMS"]/1000,yield_data["TLT_ELT"],color='blue',zorder=4,label="_nolegend_") #TLT using CPULT
+       
         a_fit_SHMS_tltVSrate, cov_SHMS_tltVSrate = curve_fit(linfunc,yield_data["rate_SHMS"]/1000, yield_data["TLT"], sigma=yield_data["uncern_TLT"], absolute_sigma = True)
         inter_SHMS_tltVSrate = a_fit_SHMS_tltVSrate[0]
         slope_SHMS_tltVSrate = a_fit_SHMS_tltVSrate[1]
@@ -1725,7 +1791,12 @@ def plot_yield():
     else: 
         plt.xlabel('HMS ElReal (PS4) Rate (kHz)', fontsize =12)
         plt.errorbar(yield_data["rate_HMS"]/1000,yield_data["TLT"],yerr=yield_data["TLT"]*yield_data["uncern_TLT"],color='black',linestyle='None',zorder=3,label="_nolegend_")
-        plt.scatter(yield_data["rate_HMS"]/1000,yield_data["TLT"],color='blue',zorder=4,label="_nolegend_")
+        plt.scatter(yield_data["rate_HMS"]/1000,yield_data["TLT"],color='red',zorder=4,label="_nolegend_")
+       
+        plt.errorbar(yield_data["rate_HMS"]/1000,yield_data["TLT_ELT"],yerr=yield_data["TLT"]*yield_data["uncern_TLT_ELT"],color='black',linestyle='None',zorder=3,label="_nolegend_")
+        plt.scatter(yield_data["rate_HMS"]/1000,yield_data["TLT_ELT"],color='blue',zorder=4,label="_nolegend_")
+       
+       
         a_fit_HMS_tltVSrate, cov_HMS_tltVSrate = curve_fit(linfunc,yield_data["rate_HMS"]/1000, yield_data["TLT"], sigma=yield_data["uncern_TLT"], absolute_sigma = True)
         inter_HMS_tltVSrate = a_fit_HMS_tltVSrate[0]
         slope_HMS_tltVSrate = a_fit_HMS_tltVSrate[1]
@@ -1889,6 +1960,7 @@ def debug():
    # print("Run numbers: ", data["run number"].sort_values())
    # print("HMS scaler ratio",data["HMS_scaler_accp"]/data["HMSTRIG_scaler"])
    # print("SHMS scaler ratio",data["SHMS_scaler_accp"]/data["SHMSTRIG_scaler"])
+
     print("HMS Cal etotnorm\n",data[["h_int_etotnorm_evts","current"]])
     print("SHMS Cal etotnorm\n",data[["p_int_etotnorm_evts","current"]])
     print("HMS yield no track\n",data["yield_HMS_notrack"])
@@ -1904,6 +1976,10 @@ def debug():
     print("Average HMS",np.average(data["yieldRel_HMS_scaler"]))
     print("Average SHMS",np.average(data["yieldRel_SHMS_scaler"]))
     print("Average I",np.average(data["current"]))
+    
+   
+    
+    
 
 ################################################################################################################################################
 
